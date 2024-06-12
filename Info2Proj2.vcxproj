@@ -127,13 +127,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="initWinstock.cpp" />
-    <ClCompile Include="main-linux.cpp" />
+    <ClCompile Include="initWinsock.cpp" />
     <ClCompile Include="main-win.cpp" />
     <ClCompile Include="Source2.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="H!.h" />
+    <ClInclude Include="initWinsock.h" />
     <ClInclude Include="h2.h" />
     <ClInclude Include="Header2.h" />
   </ItemGroup>

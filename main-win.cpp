@@ -1,6 +1,9 @@
 #include "initWinsock.h"
+
+
 #include <iostream>
 #include <string.h>
+
 
 
 #define PORT 26000
@@ -13,24 +16,24 @@ int main() {
 
     initWinsock();
 
-	cout << "hello wolrd!" << endl;
-	
+    cout << "hello wolrd!" << endl;
+
     bool firstUsr = true;
-    string version = "0.1";    
-    char buffer[BUFFER_SIZE] = {0}; // Buffer für Empfangene Daten
+    string version = "0.1";
+    char buffer[BUFFER_SIZE] = { 0 }; // Buffer für Empfangene Daten
 
     cout << "Input own address:" << endl;
     string own_address;
     cin >> own_address;
-    
-    if(size(own_address) <= 7){
+
+    if (size(own_address) <= 7) {
         own_address = "127.0.0.1";
-        cout << "loopback: Address set to 127.0.0.1" <<endl;
+        cout << "loopback: Address set to 127.0.0.1" << endl;
     }
 
     int client_socket;      //variable für Socket-Deskriptoren
     int MAX_PENDING_CONNECTIONS = 5; // Maximale Anzahl wartender Verbindungen
-    
+
     struct sockaddr_in client_address;          // client Socket-Adresse
 
     client_address.sin_family = AF_INET;            // IPv4
@@ -46,14 +49,10 @@ int main() {
     }
 
     // 3. Sockets an  Port binden
-    if (bind(client_socket, (struct sockaddr *)&client_address, sizeof(client_address)) < 0) {    // IPv4 und TCP-Verfahren
+    if (bind(client_socket, (struct sockaddr*)&client_address, sizeof(client_address)) < 0) {    // IPv4 und TCP-Verfahren
         std::cout << "client bind failed" << std::endl;
         return 1;
     }
 
 
 }
-
-
-
-    
