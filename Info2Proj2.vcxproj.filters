@@ -21,9 +21,21 @@
     <ClCompile Include="Source2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="initWinstock.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="main-win.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Header2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="H!.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="h2.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
