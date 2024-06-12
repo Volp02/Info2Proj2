@@ -1,17 +1,16 @@
 //----- winsock -------
-#include "initWinsock.h"
+//#include "initWinsock.h"
 //---------------------
 
 
 //----- linux lib -----
-//#include <sys/socket.h>
-//#include <arpa/inet.h>  // für inet_pton
-//#include <unistd.h>     // für close
+#include "Header2.h"
 //---------------------
 
 #include <iostream>
 #include <string.h>
 
+#include "h2.h"
 
 
 #define PORT 26000
@@ -23,7 +22,7 @@ using namespace std;
 int main() {
 
     // -------- init winsock --------
-    initWinsock();
+    //initWinsock();
     //-------------------------------
 
     cout << "hello wolrd!" << endl;
@@ -52,6 +51,12 @@ int main() {
 
     int addrlen = sizeof(struct sockaddr_in); // Adresse des Clients
 
+    // IP-Adresse konvertieren
+    if (inet_pton(AF_INET, own_address.c_str(), &client_address.sin_addr) <= 0) {
+        cerr << "Ungültige IP-Adresse: " << own_address << endl;
+        return false;
+    }
+
     // 2. Sockets erstellen
     if ((client_socket = socket(AF_INET, SOCK_STREAM, 0)) == 0) {   // IPv4 und TCP-Verfahren
         std::cout << "client socket setup failed" << std::endl;
@@ -64,5 +69,5 @@ int main() {
         return 1;
     }
 
-
+    FirstTimeconnect("127.0.0.1",client_socket);
 }
