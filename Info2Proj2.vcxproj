@@ -128,13 +128,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="initWinsock.cpp" />
+    <ClCompile Include="listen.cpp" />
     <ClCompile Include="main-win.cpp" />
-    <ClCompile Include="Source2.cpp" />
+    <ClCompile Include="connect.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="initWinsock.h" />
-    <ClInclude Include="h2.h" />
-    <ClInclude Include="Header2.h" />
+    <ClInclude Include="connect.h" />
+    <ClInclude Include="linuxLib.h" />
+    <ClInclude Include="listen.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -4,13 +4,13 @@
 
 
 //----- linux lib -----
-//#include "Header2.h"
+//#include "linuxLib.h"
 //---------------------
 
 #include <iostream>
 #include <string.h>
 
-#include "h2.h"
+#include "connect.h"
 
 
 #define PORT 26000
@@ -58,16 +58,19 @@ int main() {
     }
 
     // 2. Sockets erstellen
-    if ((client_socket = socket(AF_INET, SOCK_STREAM, 0)) == 0) {   // IPv4 und TCP-Verfahren
+    if ((client_socket = socket(AF_INET, SOCK_STREAM, 0)) == 0) {  
         std::cout << "client socket setup failed" << std::endl;
         return 1;
     }
 
+
     // 3. Sockets an  Port binden
-    if (bind(client_socket, (struct sockaddr*)&client_address, sizeof(client_address)) < 0) {    // IPv4 und TCP-Verfahren
-        std::cout << "client bind failed" << std::endl;
-        return 1;
-    }
+    bind(client_socket, (struct sockaddr*)&client_address, sizeof(client_address)); // Socket an Port binden
+    
+    //listen(client_socket, 3); // Auf Verbindungen warten
 
     FirstTimeconnect("127.0.0.1",client_socket);
+
+
+
 }

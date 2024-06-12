@@ -1,7 +1,7 @@
-#include "h2.h"
+#include "connect.h"
 
 #include "initWinsock.h"
-//#include "Header2.h"
+//#include "linuxLib.h"
 
 
 #define PORT 26000
@@ -39,10 +39,8 @@ bool FirstTimeconnect(string firstIP, int clientsocket) {
     // Check if handshake was successful
     if (strcmp(buffer, "INFO2 OK\n\n") == 0) {
         return true;
-    } else {
+    }
+    else {
         return false;
     }
-
-
-    return false;
 }
