@@ -1,7 +1,7 @@
 #include "h2.h"
 
-//#include "initWinsock.h"
-#include "Header2.h"
+#include "initWinsock.h"
+//#include "Header2.h"
 
 
 #define PORT 26000
@@ -24,7 +24,7 @@ bool FirstTimeconnect(string firstIP, int clientsocket) {
 
     // Verbindung herstellen
     if (connect(clientsocket, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) < 0) {
-        cerr << "Verbindungsfehler: " << strerror(errno) << endl;
+        //cerr << "Verbindungsfehler: " << strerror(errno) << endl;
         return false;
     }
 
@@ -33,7 +33,7 @@ bool FirstTimeconnect(string firstIP, int clientsocket) {
     send(clientsocket, handshakeMessage.c_str(), handshakeMessage.length(), 0);
 
     // Receive server response
-    int valread = read(clientsocket, buffer, 16);
+    int valread = recv(clientsocket, buffer, 16,0);
     cout << "Server response: " << buffer << endl;
 
     // Check if handshake was successful

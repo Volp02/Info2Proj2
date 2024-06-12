@@ -1,10 +1,10 @@
 //----- winsock -------
-//#include "initWinsock.h"
+#include "initWinsock.h"
 //---------------------
 
 
 //----- linux lib -----
-#include "Header2.h"
+//#include "Header2.h"
 //---------------------
 
 #include <iostream>
