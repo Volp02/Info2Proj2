@@ -127,7 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="main-linux.cpp" />
     <ClCompile Include="Source2.cpp" />
   </ItemGroup>
   <ItemGroup>
