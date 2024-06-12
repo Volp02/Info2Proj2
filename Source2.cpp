@@ -13,7 +13,7 @@ bool FirstTimeconnect(string firstIP, int clientsocket) {
     serverAddr.sin_family = AF_INET;
     serverAddr.sin_port = htons(PORT);
 
-    char buffer[12];
+    char buffer[16];
 
 
     // IP-Adresse konvertieren
@@ -28,25 +28,21 @@ bool FirstTimeconnect(string firstIP, int clientsocket) {
         return false;
     }
 
-    // P2PInfo2-Handshake
+    // P2PInfo2 handshake
     string handshakeMessage = "INFO2 CONNECT/0.6\n\n";
     send(clientsocket, handshakeMessage.c_str(), handshakeMessage.length(), 0);
 
-    
-    // ... (Antwort vom Server empfangen und überprüfen)
+    // Receive server response
+    int valread = read(clientsocket, buffer, 16);
+    cout << "Server response: " << buffer << endl;
 
-    listen(clientsocket, 5);
-    recv(clientsocket, buffer, sizeof(buffer), 0);
-    cout << "Server antwortet: " << buffer << endl;
-
-    if(buffer[] == "INFO2 OK\n\n"){
+    // Check if handshake was successful
+    if (strcmp(buffer, "INFO2 OK\n\n") == 0) {
         return true;
-    }
-    else{
+    } else {
         return false;
-    
     }
 
 
-    return true;
+    return false;
 }
