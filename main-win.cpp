@@ -1,5 +1,13 @@
+//----- winsock -------
 #include "initWinsock.h"
+//---------------------
 
+
+//----- linux lib -----
+//#include <sys/socket.h>
+//#include <arpa/inet.h>  // für inet_pton
+//#include <unistd.h>     // für close
+//---------------------
 
 #include <iostream>
 #include <string.h>
@@ -14,7 +22,9 @@ using namespace std;
 
 int main() {
 
+    // -------- init winsock --------
     initWinsock();
+    //-------------------------------
 
     cout << "hello wolrd!" << endl;
 
