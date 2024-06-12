@@ -13,7 +13,7 @@ bool FirstTimeconnect(string firstIP, int clientsocket) {
     serverAddr.sin_family = AF_INET;
     serverAddr.sin_port = htons(PORT);
 
-    char buffer[16];
+    char buffer[32];
 
 
     // IP-Adresse konvertieren
