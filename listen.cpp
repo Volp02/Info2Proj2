@@ -45,12 +45,11 @@ int listenForIncomingConnection()
         }
         else
         {
-            cout << "Verbindung von " << inet_ntoa(clientAddr.sin_addr) << ":" << ntohs(clientAddr.sin_port) << " akzeptiert!" << endl;
-
+           
             // 6. recieve data
 
             char dataBuffer[1024] = {0};
-            float version = 0.6;
+            double version = 0.6;
             bool accept;
 
             int recieveData = recv(acceptSocket, dataBuffer, 1024, 0);
@@ -66,7 +65,7 @@ int listenForIncomingConnection()
             std::stringstream ss2;
             string responseVers(dataBuffer + 14);
             ss2 << responseVers;
-            float ServerVersion;
+            double ServerVersion;
             ss2 >> ServerVersion;
             if (ServerVersion >= version)
             {
@@ -94,13 +93,13 @@ int listenForIncomingConnection()
 
                 send(acceptSocket, acceptConnection.c_str(), acceptConnection.length(), 0);
                 cout << "sended: " << acceptConnection << endl;
-                close(acceptSocket);
+                closesocket(acceptSocket);
             }
         }
     } // Ende der Schleife
 
     // Server-Socket schließen (wird in diesem Beispiel nie erreicht)
     cout << "while is closed" << endl;
-    close(serverSocket);
+    closesocket(serverSocket);
     return 0;
 }

@@ -1,16 +1,17 @@
 //----- winsock -------
-//#include "initWinsock.h"
+#include "initWinsock.h"
 //---------------------
 
 
 //----- linux lib -----
-#include "linuxLib.h"
+//#include "linuxLib.h"
 //---------------------
 
 #include <iostream>
 #include <string.h>
 
 #include "connect.h"
+#include "listen.h"
 
 
 #define PORT 26000
@@ -28,7 +29,7 @@ int main() {
     cout << "hello wolrd!" << endl;
 
     bool firstUsr = true;
-    float version = 0.7;
+    double version = 0.7;
     char buffer[BUFFER_SIZE] = { 0 }; // Buffer für Empfangene Daten
 
     cout << "Input own address:" << endl;
@@ -43,7 +44,8 @@ int main() {
     
     //listen(client_socket, 3); // Auf Verbindungen warten
 
-    FirstTimeconnect("192.168.178.25", version);
+    listenForIncomingConnection();
+    FirstTimeconnect("127.0.0.1", version);
 
 
 

@@ -37,7 +37,7 @@ bool FirstTimeconnect(string firstIP, float version)
     // 3. Verbindung zum Server herstellen
     if (connect(client_socket, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
     {
-        std::cerr << "Verbindungsfehler: " << strerror(errno) << std::endl;
+        //std::cerr << "Verbindungsfehler: " << strerror(errno) << std::endl;
         std::cerr << "Verbindungsfehler\n";
         return 1; // Beenden mit Fehlercode 1
     }
@@ -60,7 +60,7 @@ bool FirstTimeconnect(string firstIP, float version)
     recv(client_socket, buffer, sizeof(buffer), 0);
 
     string response(buffer);
-    close(client_socket);
+    closesocket(client_socket);
 
     if (!strcmp(response.c_str(), "INFO2 OK\n\n"))
     {
@@ -74,7 +74,7 @@ bool FirstTimeconnect(string firstIP, float version)
     return false;
 
     // 5. Verbindung schließen
-    close(client_socket);
+    closesocket(client_socket);
 
     return 0; // Erfolgreiche Beendigung
 }
