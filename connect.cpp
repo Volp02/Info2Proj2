@@ -33,16 +33,16 @@ bool FirstTimeconnect(string firstIP, float version)
         return false; // Beenden mit Fehlercode 1
     }
 
-    std::cout << "Adresse Konvertiert\n";
+    //std::cout << "Adresse Konvertiert\n";
 
     // 3. Verbindung zum Server herstellen
     if (connect(client_socket, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
     {
         //std::cerr << "Verbindungsfehler: " << strerror(errno) << std::endl;
-        std::cerr << "Verbindungsfehler\n";
+        std::cerr << "Verbindungsfehler\n Couldnt connect to Server" << firstIP << endl;
         return false; // Beenden mit Fehlercode 1
     }
-    std::cout << "Verbunden zum Server\n";
+    std::cout << "Verbunden zum Server " << firstIP << endl ;
 
     // 4. initiate handshake
     std::stringstream ss;
@@ -53,7 +53,7 @@ bool FirstTimeconnect(string firstIP, float version)
     string message = "INFO2 CONNECT/" + Sversion + "\n\n";
 
     send(client_socket, message.c_str(), message.length(), 0); // Senden der Nachricht an den Server
-    std::cout << "Nachricht gesendet: " << message << std::endl;
+    //std::cout << "Nachricht gesendet: " << message << std::endl;
 
     // 5. Antwort empfangen
     char buffer[16] = {0};
@@ -65,13 +65,13 @@ bool FirstTimeconnect(string firstIP, float version)
 
     if (!strcmp(response.c_str(), "INFO2 OK\n\n"))
     {
-        std::cout << "success handshake\n";
+        std::cout << "handshake succsessfull \n";
         std::cout << response.c_str() << endl;
         return true;
     }
 
-    cout << "failed handshake\n";
-    cout << response.c_str() << endl;
+    cout << "handshake failed\nNo connection established with " << firstIP;
+    //cout << response.c_str() << endl;
     return false;
 
     // 5. Verbindung schließen

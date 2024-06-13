@@ -27,26 +27,27 @@ int main() {
     initWinsock();
     //-------------------------------
 
-    cout << "enter own IP:" << endl;
+    cout << "enter own IP (or only last 3 digits):" << endl;
     
+    string addressStart = "192.168.178.";
     string own_address;
 
     getline(cin, own_address);
-
-    if (size(own_address) <= 7) {
-        own_address = "192.168.178.163";
-        cout << "loopback: Address set to 192.168.178.163" << endl;
+    
+    if (size(own_address) <= 3) {
+        own_address = addressStart + own_address;
+        cout << "Address set to " << own_address << endl;
     }
 
-    cout << "enter initial Servent IP:" << endl;
+    cout << "enter initial Servent IP (or only last 3 digits):" << endl;
 
     string initServer;
 
     getline(cin, initServer);
 
-    if (size(initServer) <= 7) {
-        initServer = "192.168.178.163";
-        cout << "loopback: Address set to 192.168.178.163" << endl;
+    if (size(initServer) <= 3) {
+        initServer = addressStart + initServer;
+        cout << "Address set to " << initServer << endl;
     }
 
     bool firstUsr = true;

@@ -61,7 +61,7 @@ int listenForIncomingConnection(string ownIP)
             if (!(strcmp(response.c_str(), "INFO2 CONNECT/")))
             {
                 std::cout << "handshake failed\n";
-                cout << response.c_str() << endl;
+                //cout << response.c_str() << endl;
                 continue;
             }
             std::stringstream ss2;
@@ -89,19 +89,19 @@ int listenForIncomingConnection(string ownIP)
             if ((accept) == true)
             {
 
-                cout << "Message: " << dataBuffer << endl;
+               
 
                 std::string acceptConnection = "INFO2 OK\n\n";
 
                 send(acceptSocket, acceptConnection.c_str(), acceptConnection.length(), 0);
-                cout << "sended: " << acceptConnection << endl;
+                
                 closesocket(acceptSocket);
             }
         }
     } // Ende der Schleife
 
     // Server-Socket schließen (wird in diesem Beispiel nie erreicht)
-    cout << "while is closed" << endl;
+  
     closesocket(serverSocket);
     return 0;
 }
