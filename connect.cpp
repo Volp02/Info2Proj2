@@ -3,6 +3,7 @@
 
 #include "initWinsock.h"
 //#include "linuxLib.h"
+//close  -  closesocket
 
 #define PORT 26000
 
@@ -18,7 +19,7 @@ bool FirstTimeconnect(string firstIP, float version)
     if ((client_socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == 0)
     {
         std::cout << "client socket setup failed" << std::endl;
-        return 1;
+        return false;
     }
 
     // 2. Server-Adresse konfigurieren
@@ -29,7 +30,7 @@ bool FirstTimeconnect(string firstIP, float version)
     if (inet_pton(AF_INET, firstIP.c_str(), &serv_addr.sin_addr) <= 0)
     {
         std::cerr << "Ungültige Adresse oder Adresse nicht unterstützt\n";
-        return 1; // Beenden mit Fehlercode 1
+        return false; // Beenden mit Fehlercode 1
     }
 
     std::cout << "Adresse Konvertiert\n";
@@ -39,11 +40,11 @@ bool FirstTimeconnect(string firstIP, float version)
     {
         //std::cerr << "Verbindungsfehler: " << strerror(errno) << std::endl;
         std::cerr << "Verbindungsfehler\n";
-        return 1; // Beenden mit Fehlercode 1
+        return false; // Beenden mit Fehlercode 1
     }
     std::cout << "Verbunden zum Server\n";
 
-    // 4. Nachricht senden
+    // 4. initiate handshake
     std::stringstream ss;
     string Sversion;
     ss << version;
@@ -76,5 +77,5 @@ bool FirstTimeconnect(string firstIP, float version)
     // 5. Verbindung schließen
     closesocket(client_socket);
 
-    return 0; // Erfolgreiche Beendigung
+    return false; // Erfolgreiche Beendigung
 }

@@ -9,6 +9,7 @@
 
 #include <iostream>
 #include <string.h>
+#include <string>
 
 #include "connect.h"
 #include "listen.h"
@@ -26,27 +27,40 @@ int main() {
     initWinsock();
     //-------------------------------
 
-    cout << "hello wolrd!" << endl;
+    cout << "enter own IP:" << endl;
+    
+    string own_address;
+
+    getline(cin, own_address);
+
+    if (size(own_address) <= 7) {
+        own_address = "192.168.178.163";
+        cout << "loopback: Address set to 192.168.178.163" << endl;
+    }
+
+    cout << "enter own IP:" << endl;
+
+    string initServer;
+
+    getline(cin, initServer);
+
+    if (size(initServer) <= 7) {
+        initServer = "192.168.178.163";
+        cout << "loopback: Address set to 192.168.178.163" << endl;
+    }
 
     bool firstUsr = true;
     double version = 0.7;
-    char buffer[BUFFER_SIZE] = { 0 }; // Buffer für Empfangene Daten
 
-    cout << "Input own address:" << endl;
-    string own_address;
-    cin >> own_address;
-
-    if (size(own_address) <= 7) {
-        own_address = "127.0.0.1";
-        cout << "loopback: Address set to 127.0.0.1" << endl;
+    if (firstUsr) {
+        if (FirstTimeconnect(initServer, version)) {
+            string knownClient = initServer;
+        }
+        else {
+            cout << "no connection established, acting as first Node!" << endl;
+        }
     }
-
-    
-    //listen(client_socket, 3); // Auf Verbindungen warten
-
-    listenForIncomingConnection();
-    FirstTimeconnect("127.0.0.1", version);
-
-
+    listenForIncomingConnection(own_address);
+    //FirstTimeconnect("192.168.178.163", version);
 
 }

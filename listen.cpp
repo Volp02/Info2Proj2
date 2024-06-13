@@ -5,6 +5,8 @@
 #include "initWinsock.h"
 //#include "linuxLib.h"
 
+//close  -  closesocket
+
 #pragma comment(lib, "Ws2_32.lib")
 
 using std::cin;
@@ -12,7 +14,7 @@ using std::cout;
 using std::endl;
 using std::string;
 
-int listenForIncomingConnection()
+int listenForIncomingConnection(string ownIP)
 {
 
     // 2. TCP Socket erstellen
@@ -22,7 +24,7 @@ int listenForIncomingConnection()
     sockaddr_in service;
     service.sin_family = AF_INET;
     service.sin_port = htons(26000);
-    inet_pton(AF_INET, "127.0.0.1", &service.sin_addr.s_addr);
+    inet_pton(AF_INET, ownIP.c_str(), &service.sin_addr.s_addr);
 
     bind(serverSocket, (sockaddr *)&service, sizeof(service));
 
