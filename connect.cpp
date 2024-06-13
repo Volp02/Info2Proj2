@@ -57,25 +57,18 @@ bool FirstTimeconnect(string firstIP, float version) {
     
     recv(client_socket,buffer,sizeof(buffer),0);
 
-    string response(buffer,3);
+    string response(buffer);
     close(client_socket);
 
-    if(!strcmp(response.c_str(), "OK/")){
-        std::cout << "handshake failed\n";
-        return false;
+    if(!strcmp(response.c_str(), "INFO2 OK\n\n")){
+        std::cout << "success handshake\n";
+        std::cout << response.c_str() << endl;
+        return true;
     }
 
-    string responseVers(buffer + 6);
-        ss << responseVers;
-        float ServerVersion;
-        ss >> ServerVersion;
-        if(ServerVersion >= version){
-            std::cout << "handshake successful\n";
-            return true;
-        }
-        else{
-            
-        }
+    cout << "failed handshake\n";
+    cout << response.c_str() << endl;
+    return false;
 
     // 5. Verbindung schließen
     close(client_socket);
