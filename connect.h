@@ -4,4 +4,4 @@
 
 //Header for FirstTimeConnect
 
-bool FirstTimeconnect(std::string firstIP, int clientsocket);
+bool FirstTimeconnect(std::string firstIP, float version);

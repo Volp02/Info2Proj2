@@ -366,3 +366,5 @@ FodyWeavers.xsd
 .vscode/c_cpp_properties.json
 tmp
 a.out
+
+main-lnx.cpp

@@ -1,46 +1,85 @@
 #include "connect.h"
+#include <sstream>
 
 #include "initWinsock.h"
-//#include "linuxLib.h"
 
+//#include "linuxLib.h"
 
 #define PORT 26000
 
 using namespace std;
 
-bool FirstTimeconnect(string firstIP, int clientsocket) {
-    struct sockaddr_in serverAddr;
-    serverAddr.sin_family = AF_INET;
-    serverAddr.sin_port = htons(PORT);
+bool FirstTimeconnect(string firstIP, float version) {
+    
+    struct sockaddr_in serv_addr;  // Struktur für die Server-Adresse
+    int client_socket;             // Socket-Descriptor des Clients
 
-    char buffer[32];
+    //creat socket
+    if ((client_socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == 0) {  
+        std::cout << "client socket setup failed" << std::endl;
+        return 1;
+    }
 
 
-    // IP-Adresse konvertieren
-    if (inet_pton(AF_INET, firstIP.c_str(), &serverAddr.sin_addr) <= 0) {
-        cerr << "Ungültige IP-Adresse: " << firstIP << endl;
+    // 2. Server-Adresse konfigurieren
+    serv_addr.sin_family = AF_INET;             // IPv4-Adressfamilie
+    serv_addr.sin_port = htons(PORT);           // Portnummer in Netzwerk-Byte-Reihenfolge umwandeln
+
+    // Konvertiert IPv4-Adresse von Text zu Binärformat
+    if (inet_pton(AF_INET, firstIP.c_str(), &serv_addr.sin_addr) <= 0) { 
+        std::cerr << "Ungültige Adresse oder Adresse nicht unterstützt\n";
+        return 1; // Beenden mit Fehlercode 1
+    }
+
+    std::cout << "Adresse Konvertiert\n";
+
+    // 3. Verbindung zum Server herstellen
+    if (connect(client_socket, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
+        std::cerr << "Verbindungsfehler: " << strerror(errno) << std::endl;
+        std::cerr << "Verbindungsfehler\n";
+        return 1; // Beenden mit Fehlercode 1
+    }
+    std::cout << "Verbunden zum Server\n";
+    
+    // 4. Nachricht senden
+    std::stringstream ss;
+    string Sversion;
+    ss << version;
+    ss >> Sversion;
+  
+    string message = "INFO2 CONNECT/" + Sversion + "\n\n";
+
+    send(client_socket, message.c_str(), message.length(), 0); // Senden der Nachricht an den Server
+    std::cout << "Nachricht gesendet: " << message << std::endl;
+
+    // 5. Antwort empfangen
+    char buffer[16] ={0};
+    
+    recv(client_socket,buffer,sizeof(buffer),0);
+
+    string response(buffer,3);
+    close(client_socket);
+
+    if(!strcmp(response.c_str(), "OK/")){
+        std::cout << "handshake failed\n";
         return false;
     }
 
-    // Verbindung herstellen
-    if (connect(clientsocket, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) < 0) {
-        //cerr << "Verbindungsfehler: " << strerror(errno) << endl;
-        return false;
-    }
+    string responseVers(buffer + 6);
+        ss << responseVers;
+        float ServerVersion;
+        ss >> ServerVersion;
+        if(ServerVersion >= version){
+            std::cout << "handshake successful\n";
+            return true;
+        }
+        else{
+            
+        }
 
-    // P2PInfo2 handshake
-    string handshakeMessage = "INFO2 CONNECT/0.6\n\n";
-    send(clientsocket, handshakeMessage.c_str(), handshakeMessage.length(), 0);
+    // 5. Verbindung schließen
+    close(client_socket);
 
-    // Receive server response
-    int valread = recv(clientsocket, buffer, 16,0);
-    cout << "Server response: " << buffer << endl;
+    return 0; // Erfolgreiche Beendigung
 
-    // Check if handshake was successful
-    if (strcmp(buffer, "INFO2 OK\n\n") == 0) {
-        return true;
-    }
-    else {
-        return false;
-    }
 }

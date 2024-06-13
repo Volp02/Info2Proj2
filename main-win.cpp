@@ -22,13 +22,13 @@ using namespace std;
 int main() {
 
     // -------- init winsock --------
-    //initWinsock();
+    initWinsock();
     //-------------------------------
 
     cout << "hello wolrd!" << endl;
 
     bool firstUsr = true;
-    string version = "0.1";
+    float version = 0.7;
     char buffer[BUFFER_SIZE] = { 0 }; // Buffer für Empfangene Daten
 
     cout << "Input own address:" << endl;
@@ -40,36 +40,10 @@ int main() {
         cout << "loopback: Address set to 127.0.0.1" << endl;
     }
 
-    int client_socket;      //variable für Socket-Deskriptoren
-    int MAX_PENDING_CONNECTIONS = 5; // Maximale Anzahl wartender Verbindungen
-
-    struct sockaddr_in client_address;          // client Socket-Adresse
-
-    client_address.sin_family = AF_INET;            // IPv4
-    client_address.sin_addr.s_addr = INADDR_ANY;    // Any IP
-    client_address.sin_port = htons(PORT);          // Port setzen
-
-    int addrlen = sizeof(struct sockaddr_in); // Adresse des Clients
-
-    // IP-Adresse konvertieren
-    if (inet_pton(AF_INET, own_address.c_str(), &client_address.sin_addr) <= 0) {
-        cerr << "Ungültige IP-Adresse: " << own_address << endl;
-        return false;
-    }
-
-    // 2. Sockets erstellen
-    if ((client_socket = socket(AF_INET, SOCK_STREAM, 0)) == 0) {  
-        std::cout << "client socket setup failed" << std::endl;
-        return 1;
-    }
-
-
-    // 3. Sockets an  Port binden
-    bind(client_socket, (struct sockaddr*)&client_address, sizeof(client_address)); // Socket an Port binden
     
     //listen(client_socket, 3); // Auf Verbindungen warten
 
-    FirstTimeconnect("127.0.0.1",client_socket);
+    FirstTimeconnect("192.168.178.25", version);
 
 
 
