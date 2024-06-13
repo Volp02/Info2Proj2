@@ -38,7 +38,7 @@ int main() {
         cout << "loopback: Address set to 192.168.178.163" << endl;
     }
 
-    cout << "enter own IP:" << endl;
+    cout << "enter initial Servent IP:" << endl;
 
     string initServer;
 
@@ -55,6 +55,7 @@ int main() {
     if (firstUsr) {
         if (FirstTimeconnect(initServer, version)) {
             string knownClient = initServer;
+            cout << "connected to client " << knownClient << endl;
         }
         else {
             cout << "no connection established, acting as first Node!" << endl;
