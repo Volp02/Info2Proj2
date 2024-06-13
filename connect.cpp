@@ -2,7 +2,6 @@
 #include <sstream>
 
 #include "initWinsock.h"
-
 //#include "linuxLib.h"
 
 #define PORT 26000
@@ -19,7 +18,6 @@ bool FirstTimeconnect(string firstIP, float version) {
         std::cout << "client socket setup failed" << std::endl;
         return 1;
     }
-
 
     // 2. Server-Adresse konfigurieren
     serv_addr.sin_family = AF_INET;             // IPv4-Adressfamilie
