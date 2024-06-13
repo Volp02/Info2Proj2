@@ -1,53 +1,55 @@
 #include <sstream>
 #include <iostream>
-#include <string.h>  // Include the string.h header
-
+#include <string.h> // Include the string.h header
 
 #include "initWinsock.h"
 //#include "linuxLib.h"
 
 #pragma comment(lib, "Ws2_32.lib")
 
-using  std::endl;
-using  std::cout;
-using  std::cin;
+using std::cin;
+using std::cout;
+using std::endl;
 using std::string;
 
-
-void listenForIncomingConnection()
+int listenForIncomingConnection()
 {
 
-	// 2. TCP Socket erstellen
+    // 2. TCP Socket erstellen
     int serverSocket = socket(AF_INET, SOCK_STREAM, 0); // 0 steht für das Standardprotokoll (TCP)
 
     // 3. Socket binden
     sockaddr_in service;
     service.sin_family = AF_INET;
-    service.sin_port = htons(26000); 
-    inet_pton(AF_INET,"127.0.0.1", &service.sin_addr.s_addr); 
+    service.sin_port = htons(26000);
+    inet_pton(AF_INET, "127.0.0.1", &service.sin_addr.s_addr);
 
-    bind(serverSocket, (sockaddr*)&service, sizeof(service));
+    bind(serverSocket, (sockaddr *)&service, sizeof(service));
 
     // 4. Auf Verbindungen warten
     listen(serverSocket, 2); // 2: maximale Anzahl an wartenden Verbindungen
-    
-        cout << "Warte auf Verbindungen..." << endl;
+
+    cout << "Warte auf Verbindungen..." << endl;
 
     // Unendliche Schleife, um mehrere Client-Verbindungen zu akzeptieren
-    while (true) {
+    while (true)
+    {
         // 5. Verbindung akzeptieren
         sockaddr_in clientAddr;
         socklen_t clientAddrLen = sizeof(clientAddr);
-        int acceptSocket = accept(serverSocket, (sockaddr*)&clientAddr, &clientAddrLen);
+        int acceptSocket = accept(serverSocket, (sockaddr *)&clientAddr, &clientAddrLen);
 
-        if (serverSocket == -1) {
+        if (serverSocket == -1)
+        {
             continue; // Zum nächsten Schleifendurchlauf springen
-        } else {
+        }
+        else
+        {
             cout << "Verbindung von " << inet_ntoa(clientAddr.sin_addr) << ":" << ntohs(clientAddr.sin_port) << " akzeptiert!" << endl;
 
-            //6. recieve data
+            // 6. recieve data
 
-            char dataBuffer[1024] = { 0 };
+            char dataBuffer[1024] = {0};
             float version = 0.6;
             bool accept;
 
@@ -55,23 +57,24 @@ void listenForIncomingConnection()
 
             string response(dataBuffer, 13);
 
-
-            if (!(strcmp(response.c_str(), "INFO2 CONNECT/"))) {
+            if (!(strcmp(response.c_str(), "INFO2 CONNECT/")))
+            {
                 std::cout << "handshake failed\n";
                 cout << response.c_str() << endl;
                 continue;
-                
             }
             std::stringstream ss2;
             string responseVers(dataBuffer + 14);
             ss2 << responseVers;
             float ServerVersion;
             ss2 >> ServerVersion;
-            if (ServerVersion >= version) {
+            if (ServerVersion >= version)
+            {
                 std::cout << "handshake successful\n";
                 accept = true;
             }
-            else {
+            else
+            {
                 accept = false;
                 std::cout << "handshake failed" << endl;
                 continue;
@@ -84,7 +87,7 @@ void listenForIncomingConnection()
 
             if ((accept) == true)
             {
-            
+
                 cout << "Message: " << dataBuffer << endl;
 
                 std::string acceptConnection = "INFO2 OK\n\n";
@@ -92,15 +95,12 @@ void listenForIncomingConnection()
                 send(acceptSocket, acceptConnection.c_str(), acceptConnection.length(), 0);
                 cout << "sended: " << acceptConnection << endl;
                 close(acceptSocket);
-            
             }
-
-
         }
     } // Ende der Schleife
 
     // Server-Socket schließen (wird in diesem Beispiel nie erreicht)
-    cout << "while is closed"<<endl;
+    cout << "while is closed" << endl;
     close(serverSocket);
-
+    return 0;
 }
