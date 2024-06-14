@@ -10,6 +10,7 @@
 #include <iostream>
 #include <string.h>
 #include <string>
+#include <thread>
 
 #include "connect.h"
 #include "listen.h"
@@ -24,7 +25,7 @@ using namespace std;
 int main() {
 
     // -------- init winsock --------
-    initWinsock();
+    //initWinsock();
     //-------------------------------
 
     cout << "enter own IP (or only last 3 digits):" << endl;
@@ -34,7 +35,7 @@ int main() {
 
     getline(cin, own_address);
     
-    if (size(own_address) <= 3) {
+    if (sizeof(own_address) <= 3) {
         own_address = addressStart + own_address;
         cout << "Address set to " << own_address << endl;
     }
@@ -45,7 +46,7 @@ int main() {
 
     getline(cin, initServer);
 
-    if (size(initServer) <= 3) {
+    if (sizeof(initServer) <= 3) {
         initServer = addressStart + initServer;
         cout << "Address set to " << initServer << endl;
     }
@@ -62,7 +63,16 @@ int main() {
             cout << "no connection established, acting as first Node!" << endl;
         }
     }
-    listenForIncomingConnection(own_address);
-    //FirstTimeconnect("192.168.178.163", version);
+
+    thread t1(listenForIncomingConnection, own_address); // thread #2
+    thread t2(FirstTimeconnect, initServer, version); // thread #3
+
+
+    t1.join(); 
+    t2.join(); 
+    return 0;
+
+    //listenForIncomingConnection(own_address);
+    //FirstTimeconnect("192.168.178.163", version); 
 
 }

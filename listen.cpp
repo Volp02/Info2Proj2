@@ -5,7 +5,7 @@
 #include "initWinsock.h"
 //#include "linuxLib.h"
 
-//close  -  closesocket
+//close  -  closesocketsocket
 
 #pragma comment(lib, "Ws2_32.lib")
 
@@ -14,7 +14,7 @@ using std::cout;
 using std::endl;
 using std::string;
 
-int listenForIncomingConnection(string ownIP)
+void listenForIncomingConnection(string ownIP)
 {
 
     // 2. TCP Socket erstellen
@@ -103,5 +103,5 @@ int listenForIncomingConnection(string ownIP)
     // Server-Socket schließen (wird in diesem Beispiel nie erreicht)
   
     closesocket(serverSocket);
-    return 0;
+    return;
 }
