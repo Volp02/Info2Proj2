@@ -107,6 +107,7 @@ void listenForIncomingConnection(string ownIP, double OwnVersion, vector<string>
             string SENDResponse(dataBuffer, 4);
             if (!(strcmp(BackconnectResponse.c_str(), "SEND"))) {
                 
+                string MessageToForward(dataBuffer);
                 string RecevedMessageID (dataBuffer + 5, 11);
                 std::stringstream ss3;
                 ss3 << RecevedMessageID;
@@ -114,7 +115,7 @@ void listenForIncomingConnection(string ownIP, double OwnVersion, vector<string>
                 ss3 >> RecevedMessageIDint;
 
                 if (!checkMessageID(MessageIDs, RecevedMessageIDint)) {
-                    
+                    sendMessage(MessageToForward, RecevedMessageIDint, IPStr);
                 }
 
                 
