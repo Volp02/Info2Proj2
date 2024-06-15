@@ -62,7 +62,7 @@ int main() {
     float version = 0.7;
 
 
-    thread t1(listenForIncomingConnection, own_address, version); // thread #2
+    
 
 
     if (!firstUsr) {
@@ -79,7 +79,7 @@ int main() {
         }
     }
 
-    
+    thread t1(listenForIncomingConnection, own_address, version); // thread #2
 
     t1.join(); 
  
