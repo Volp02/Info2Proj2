@@ -39,7 +39,7 @@ int main() {
 
     getline(cin, own_address);
     
-    if (sizeof(own_address) <= 3) {
+    if (size(own_address) <= 3) {
         own_address = addressStart + own_address;
         cout << "Address set to " << own_address << endl;
     }
@@ -50,7 +50,7 @@ int main() {
 
     getline(cin, initServer);
 
-    if (sizeof(initServer) <= 3) {
+    if (size(initServer) <= 3) {
         initServer = addressStart + initServer;
         cout << "Address set to " << initServer << endl;
     }
