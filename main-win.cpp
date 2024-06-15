@@ -13,7 +13,6 @@ typedef int socklen_t;
 
 #include "connect.h"
 #include "listen.h"
-#include "createSocket.h"
 
 
 #define PORT 26000
@@ -65,6 +64,7 @@ int main() {
 
     if (firstUsr) {
         if (FirstTimeconnect(initServer, version)) {
+
             string knownClient = initServer;
             cout << "connected to client " << knownClient << endl;
         }

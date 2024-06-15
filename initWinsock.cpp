@@ -24,7 +24,6 @@ int initWinsock() {
     {
         cout << "WSA Startup successful!" << endl;
 
-
     }
 
 }

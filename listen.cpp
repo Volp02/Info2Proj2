@@ -2,6 +2,8 @@
 #include <iostream>
 #include <string.h> // Include the string.h header
 
+#include "connect.h"
+
 #include "initWinsock.h"
 //#include "linuxLib.h"
 
@@ -14,7 +16,7 @@ using std::cout;
 using std::endl;
 using std::string;
 
-void listenForIncomingConnection(string ownIP)
+void listenForIncomingConnection(string ownIP, double OwnVersion)
 {
 
     // 2. TCP Socket erstellen
@@ -49,54 +51,39 @@ void listenForIncomingConnection(string ownIP)
         {
            
             // 6. recieve data
-
             char dataBuffer[1024] = {0};
-            double version = 0.6;
-            bool accept;
-
             int recieveData = recv(acceptSocket, dataBuffer, 1024, 0);
 
-            string response(dataBuffer, 13);
-
-            if (!(strcmp(response.c_str(), "INFO2 CONNECT/")))
+            string ConnectResponse(dataBuffer, 14);
+            if (!(strcmp(ConnectResponse.c_str(), "INFO2 CONNECT/")))
             {
-                std::cout << "handshake failed\n";
-                //cout << response.c_str() << endl;
-                continue;
+                std::stringstream ss2;
+                string responseVers(dataBuffer + 14);
+                ss2 << responseVers;
+                double clientVersion;
+                ss2 >> clientVersion;
+                if (clientVersion >= OwnVersion)
+                {
+                    std::cout << "handshake successful\n";
+                    std::string acceptConnection = "INFO2 OK\n\n";
+
+                    send(acceptSocket, acceptConnection.c_str(), acceptConnection.length(), 0);
+                    closesocket(acceptSocket);
+                }
+                else
+                {
+                    std::cout << "handshake failed" << endl;
+                    continue;
+                }
+
             }
-            std::stringstream ss2;
-            string responseVers(dataBuffer + 14);
-            ss2 << responseVers;
-            double ServerVersion;
-            ss2 >> ServerVersion;
-            if (ServerVersion >= version)
-            {
-                std::cout << "handshake successful\n";
-                accept = true;
+
+            string BackconnectResponse (dataBuffer, 11);
+            if (!(strcmp(BackconnectResponse.c_str(), "BACKCONNECT"))) {
+                string responseIP(dataBuffer + 11);
+                FirstTimeconnect(responseIP, OwnVersion);    
             }
-            else
-            {
-                accept = false;
-                std::cout << "handshake failed" << endl;
-                continue;
-            }
-
-            std::stringstream ss;
-            string Sversion;
-            ss << version;
-            ss >> Sversion;
-
-            if ((accept) == true)
-            {
-
-               
-
-                std::string acceptConnection = "INFO2 OK\n\n";
-
-                send(acceptSocket, acceptConnection.c_str(), acceptConnection.length(), 0);
-                
-                closesocket(acceptSocket);
-            }
+            
         }
     } // Ende der Schleife
 
