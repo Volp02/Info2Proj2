@@ -25,7 +25,7 @@ using std::endl;
 using std::string;
 using std::vector;
 
-void listenForIncomingConnection(string ownIP, double OwnVersion, vector<string> &IPStr)
+void listenForIncomingConnection(string ownIP, double OwnVersion, vector<string> &IPStr, vector<int> &MessageIDs)
 {
 
     // 2. TCP Socket erstellen
@@ -113,6 +113,9 @@ void listenForIncomingConnection(string ownIP, double OwnVersion, vector<string>
                 int RecevedMessageIDint;
                 ss3 >> RecevedMessageIDint;
 
+                if (!checkMessageID(MessageIDs, RecevedMessageIDint)) {
+                    
+                }
 
                 
             }
