@@ -47,9 +47,9 @@ bool FirstTimeconnect(string firstIP, float version)
     // 3. Verbindung zum Server herstellen
     if (connect(client_socket, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) <= 0)
     {
-        //std::cerr << "Verbindungsfehler: " << strerror(errno) << std::endl;
+        std::cerr << "Verbindungsfehler: " << strerror(errno) << std::endl;
         std::cerr << "Verbindungsfehler\n Couldnt connect to Server" << firstIP << endl;
-        return false; // Beenden mit Fehlercode 1
+        //return false; // Beenden mit Fehlercode 1
     }
     std::cout << "FirstTimeConnect: Verbunden zum Server " << firstIP << endl ;
 
