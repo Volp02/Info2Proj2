@@ -21,7 +21,7 @@ typedef int socklen_t;
 #define BUFFER_SIZE 1024
 
 
-std::vector<std::string> storeIP(std::vector IPStr, std::string IP)
+std::vector<std::string> storeIP(std::vector<std::string> IPStr, std::string IP)
 {
 	IPStr.push_back(IP);
 

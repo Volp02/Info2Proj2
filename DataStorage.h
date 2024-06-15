@@ -3,4 +3,4 @@
 #include <vector>
 #include <iostream>
 
-std::vector<std::string> storeIP(std::vector IPStr, std::string IP);
+std::vector<std::string> storeIP(std::vector<std::string> IPStr, std::string IP);
