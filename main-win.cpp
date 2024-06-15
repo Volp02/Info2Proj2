@@ -67,12 +67,16 @@ int main() {
 
             string knownClient = initServer;
             cout << "connected to client " << knownClient << endl;
+
+            backConnectSend(own_address, initServer);
+
         }
         else {
             cout << "no connection established, acting as first Node!" << endl;
         }
     }
 
+    
 
     t1.join(); 
  
