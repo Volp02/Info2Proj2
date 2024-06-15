@@ -94,6 +94,14 @@ void listenForIncomingConnection(string ownIP, double OwnVersion)
                 FirstTimeconnect(responseIP, OwnVersion);    
             }
             
+            string FriendRqResponse(dataBuffer, 18);
+            if (!(strcmp(BackconnectResponse.c_str(), "FRIEND REQUEST\n\n"))) {
+                
+                //string IP;
+                //IP = getIP(); --> to be implemented...
+
+                //send(acceptSocket, IP.c_str(), IP.length(), 0)
+            }
         }
     } // Ende der Schleife
 
