@@ -21,7 +21,14 @@ std::vector<std::string> storeIP(std::vector<std::string> &IPStr, const std::str
 	return IPStr;
 }
 
-std::string giveID(std::vector<std::string>& IPStr)
+bool storeMessageID(std::vector<int> &MessageID_Vector, int MessageID)
+{
+	MessageID_Vector.push_back(MessageID);
+}
+
+
+
+std::string giveIP(std::vector<std::string>& IPStr)
 {
 	static int count = 1;
 

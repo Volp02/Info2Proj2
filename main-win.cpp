@@ -33,7 +33,7 @@ int main() {
     
     string addressStart = "192.168.178.";
     string own_address;
-    std::vector<std::string> knownIDs = { 0 };
+    std::vector<std::string> knownIDs;
 
     getline(cin, own_address);
     
