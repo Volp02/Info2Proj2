@@ -1,11 +1,17 @@
+#ifdef _WIN32 // Windows-spezifischer Code
+#include "initWinsock.h"
+typedef int socklen_t;
+#else // Linux-spezifischer Code
+#include "linuxLib.h"
+#define closesocket close
+#endif
+
+
 #include <sstream>
 #include <iostream>
 #include <string.h> // Include the string.h header
 
 #include "connect.h"
-
-#include "initWinsock.h"
-//#include "linuxLib.h"
 
 //close  -  closesocketsocket
 
