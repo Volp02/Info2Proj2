@@ -61,7 +61,7 @@ int main() {
     double version = 0.7;
 
 
-    
+    //listenForIncomingConnection, own_address, version, knownIPs, usedMsgIDs;
 
 
     if (!firstUsr) {
@@ -76,13 +76,16 @@ int main() {
         }
         else {
             cout << "no connection established, acting as first Node!" << endl;
+            storeIP(knownIPs, own_address);
         }
     }
 
 
     thread t1(listenForIncomingConnection, own_address, version, std::ref(knownIPs), std::ref(usedMsgIDs)); // thread #2
 
-  
+    sendMessageIDlessDEBUG("FRIENDREQUEST", knownIPs);
+    sendMessageIDlessDEBUG("SEND 123456 This is an example message", knownIPs);
+
 
     t1.join(); 
  
