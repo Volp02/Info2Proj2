@@ -58,7 +58,7 @@ int main() {
     cout << "are you the first node? (1 / 0)";
     cin >> firstUsr;
     
-    double version = 0.7;
+    double version = 0.6;
 
 
     //listenForIncomingConnection, own_address, version, knownIPs, usedMsgIDs;
@@ -83,8 +83,8 @@ int main() {
 
     thread t1(listenForIncomingConnection, own_address, version, std::ref(knownIPs), std::ref(usedMsgIDs)); // thread #2
 
-    sendMessageIDlessDEBUG("FRIENDREQUEST", knownIPs);
-    sendMessageIDlessDEBUG("SEND 123456 This is an example message", knownIPs);
+    //sendMessageIDlessDEBUG("FRIENDREQUEST", knownIPs);
+    //sendMessageIDlessDEBUG("SEND 123456 This is an example message", knownIPs);
 
 
     t1.join(); 

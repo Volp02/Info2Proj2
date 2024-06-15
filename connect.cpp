@@ -63,6 +63,7 @@ bool FirstTimeconnect(string firstIP, double version)
     ss >> Sversion;
 
     string message = "INFO2 CONNECT/" + Sversion + "\n\n";
+    cout<< "send: " << message << endl;
 
     send(client_socket, message.c_str(), message.length(), 0); // Senden der Nachricht an den Server
     //std::cout << "Nachricht gesendet: " << message << std::endl;
