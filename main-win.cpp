@@ -65,7 +65,7 @@ int main() {
     thread t1(listenForIncomingConnection, own_address, version); // thread #2
 
 
-    if (firstUsr) {
+    if (!firstUsr) {
         if (FirstTimeconnect(initServer, version)) {
 
             string knownClient = initServer;
