@@ -84,12 +84,11 @@ bool FirstTimeconnect(string firstIP, float version)
 
     cout << "FirstTimeConnect: handshake failed\nNo connection established with " << firstIP;
     //cout << response.c_str() << endl;
-    return false;
 
     // 5. Verbindung schließen
     closesocket(client_socket);
 
-    return false; // Erfolgreiche Beendigung
+    return false; // no connection
 }
 bool backConnectSend(string ownIP, string sendIP)
 {
@@ -126,4 +125,52 @@ bool backConnectSend(string ownIP, string sendIP)
     send(clientIP_socket, message.c_str(), message.length(), 0); // Senden der Nachricht an den Server
     std::cout << "Backconnect: Nachricht gesendet: " << message << std::endl;
     return true;
+}
+string sendFriendRequest(std::string targetIP) {
+
+    struct sockaddr_in serv_addr; // Struktur für die Server-Adresse
+    int clientIP_socket;            // Socket-Descriptor des Clients
+
+    // creat socket
+    if ((clientIP_socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == 0)
+    {
+        std::cout << "client socket setup failed" << std::endl;
+        return "error";
+    }
+    serv_addr.sin_family = AF_INET;   // IPv4-Adressfamilie
+    serv_addr.sin_port = htons(PORT); // Portnummer in Netzwerk-Byte-Reihenfolge umwandeln
+
+    // Konvertiert IPv4-Adresse von Text zu Binärformat
+    if (inet_pton(AF_INET, targetIP.c_str(), &serv_addr.sin_addr) <= 0)
+    {
+        std::cerr << "sendFriendRequest: Ungültige Adresse oder Adresse nicht unterstützt\n";
+        return "error"; // Beenden mit Fehlercode 1
+    } 
+    // 3. Verbindung zum Server herstellen
+    if (connect(clientIP_socket, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) < 0)
+    {
+        //std::cerr << "Verbindungsfehler: " << strerror(errno) << std::endl;
+        std::cerr << "sendFriendRequest: Verbindungsfehler\n Couldnt connect to Server" << targetIP << endl;
+        return "error"; // Beenden mit Fehlercode 1
+    }
+    std::cout << "sendFriendRequest: Verbunden zum Server " << targetIP << endl;
+
+
+    string payload = "FRIEND REQUEST\n\n";
+
+    send(clientIP_socket, payload.c_str(), payload.length(), 0); // Senden der Nachricht an den Server
+    std::cout << "sendFriendRequest: Nachricht gesendet: " << payload << std::endl;
+
+    char buffer[12] = { 0 };
+
+    recv(clientIP_socket, buffer, sizeof(buffer), 0);
+
+    string response(buffer);
+
+    closesocket(clientIP_socket);
+
+    return response;
+    
+    // 5. Verbindung schließen
+    
 }
