@@ -1,11 +1,10 @@
-//----- winsock -------
+#ifdef _WIN32 // Windows-spezifischer Code
 #include "initWinsock.h"
-//---------------------
-
-
-//----- linux lib -----
-//#include "linuxLib.h"
-//---------------------
+typedef int socklen_t;
+#else // Linux-spezifischer Code
+#include "linuxLib.h"
+#define closesocket close
+#endif
 
 #include <iostream>
 #include <string.h>
@@ -14,6 +13,7 @@
 
 #include "connect.h"
 #include "listen.h"
+#include "createSocket.h"
 
 
 #define PORT 26000
@@ -24,9 +24,16 @@ using namespace std;
 
 int main() {
 
+    #ifdef _WIN32 
+        initWinsock();
+    #endif
+    
     // -------- init winsock --------
     //initWinsock();
     //-------------------------------
+
+    ListeningSocket listener(26000);
+
 
     cout << "enter own IP (or only last 3 digits):" << endl;
     

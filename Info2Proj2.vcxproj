@@ -127,12 +127,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="createSocket.cpp" />
     <ClCompile Include="initWinsock.cpp" />
     <ClCompile Include="listen.cpp" />
     <ClCompile Include="main-win.cpp" />
     <ClCompile Include="connect.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="createSocket.h" />
     <ClInclude Include="initWinsock.h" />
     <ClInclude Include="connect.h" />
     <ClInclude Include="linuxLib.h" />
