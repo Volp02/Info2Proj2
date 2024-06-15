@@ -33,7 +33,7 @@ int main() {
     
     string addressStart = "192.168.178.";
     string own_address;
-    std::vector<std::string> knownIDs;
+    std::vector<std::string> knownIPs;
 
     getline(cin, own_address);
     
@@ -79,7 +79,7 @@ int main() {
     }
 
 
-    thread t1(listenForIncomingConnection, own_address, version); // thread #2
+    thread t1(listenForIncomingConnection, own_address, version, knownIPs); // thread #2
 
     t1.join(); 
  

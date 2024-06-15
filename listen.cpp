@@ -11,7 +11,9 @@ typedef int socklen_t;
 #include <iostream>
 #include <string.h> // Include the string.h header
 
+
 #include "connect.h"
+#include "DataStorage.h"
 
 //close  -  closesocketsocket
 
@@ -21,8 +23,9 @@ using std::cin;
 using std::cout;
 using std::endl;
 using std::string;
+using std::vector;
 
-void listenForIncomingConnection(string ownIP, double OwnVersion)
+void listenForIncomingConnection(string ownIP, double OwnVersion, vector<string> &IPStr)
 {
 
     // 2. TCP Socket erstellen
@@ -97,12 +100,22 @@ void listenForIncomingConnection(string ownIP, double OwnVersion)
             string FriendRqResponse(dataBuffer, 18);
             if (!(strcmp(BackconnectResponse.c_str(), "FRIEND REQUEST\n\n"))) {
                 
-                //string IP;
-                //IP = getIP(); --> to be implemented...
-
-                //send(acceptSocket, IP.c_str(), IP.length(), 0)
+                string IP;
+                IP = giveIP(IPStr);
+                send(acceptSocket, IP.c_str(), IP.length(), 0);
             }
             string SENDResponse(dataBuffer, 4);
+            if (!(strcmp(BackconnectResponse.c_str(), "SEND"))) {
+                
+                string RecevedMessageID (dataBuffer + 5, 11);
+                std::stringstream ss3;
+                ss3 << RecevedMessageID;
+                int RecevedMessageIDint;
+                ss3 >> RecevedMessageIDint;
+
+
+                
+            }
 
         }
     } // Ende der Schleife

@@ -1,4 +1,4 @@
 #pragma once
 #include <string>
 
-void listenForIncomingConnection(std::string ownIP, double OwnVersion);
+void listenForIncomingConnection(std::string ownIP, double OwnVersion, std::vector<std::string>& IPStr);
