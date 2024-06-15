@@ -7,9 +7,10 @@
 
 #define PORT 26000
 
+
 using namespace std;
 
-bool FirstTimeconnect(string firstIP, float version)
+inline bool FirstTimeconnect(string firstIP, float version)
 {
 
     struct sockaddr_in serv_addr; // Struktur für die Server-Adresse
@@ -61,7 +62,6 @@ bool FirstTimeconnect(string firstIP, float version)
     recv(client_socket, buffer, sizeof(buffer), 0);
 
     string response(buffer);
-    closesocket(client_socket);
 
     if (!strcmp(response.c_str(), "INFO2 OK\n\n"))
     {
@@ -69,13 +69,50 @@ bool FirstTimeconnect(string firstIP, float version)
         std::cout << response.c_str() << endl;
         return true;
     }
+    else
+    {
+        cout << "handshake failed\nNo connection established with " << firstIP;
+        //cout << response.c_str() << endl;
+    }
 
-    cout << "handshake failed\nNo connection established with " << firstIP;
-    //cout << response.c_str() << endl;
-    return false;
+
+   
+  
+
 
     // 5. Verbindung schließen
     closesocket(client_socket);
 
     return false; // Erfolgreiche Beendigung
 }
+
+bool sendHandshake(string IP)
+{
+
+    struct sockaddr_in serv_addr; // Struktur für die Server-Adresse
+    int client_socket;            // Socket-Descriptor des Clients
+
+    // creat socket
+    if ((client_socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == 0)
+    {
+        std::cout << "client socket setup failed" << std::endl;
+        return false;
+    }
+
+    // 2. Server-Adresse konfigurieren
+    serv_addr.sin_family = AF_INET;   // IPv4-Adressfamilie
+    serv_addr.sin_port = htons(PORT); // Portnummer in Netzwerk-Byte-Reihenfolge umwandeln
+
+    string IPmessage = "BACKCONNECT " + IP;
+
+    send(client_socket, IPmessage.c_str(), IPmessage.length(), 0); // Senden der Nachricht an den Server
+    //std::cout << "Nachricht gesendet: " << message << std::endl;
+
+
+
+    // 5. Verbindung schließen
+    closesocket(client_socket);
+
+    return false; // Erfolgreiche Beendigung
+}
+
