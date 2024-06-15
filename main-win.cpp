@@ -1,11 +1,10 @@
-//----- winsock -------
+#ifdef _WIN32 // Windows-spezifischer Code
 #include "initWinsock.h"
-//---------------------
-
-
-//----- linux lib -----
-//#include "linuxLib.h"
-//---------------------
+typedef int socklen_t;
+#else // Linux-spezifischer Code
+#include "linuxLib.h"
+#define closesocket close
+#endif
 
 #include <iostream>
 #include <string.h>
@@ -14,6 +13,7 @@
 
 #include "connect.h"
 #include "listen.h"
+#include "createSocket.h"
 
 
 #define PORT 26000
@@ -24,9 +24,14 @@ using namespace std;
 
 int main() {
 
+    #ifdef _WIN32 
+        initWinsock();
+    #endif
+    
     // -------- init winsock --------
     //initWinsock();
     //-------------------------------
+
 
     cout << "enter own IP (or only last 3 digits):" << endl;
     
@@ -54,6 +59,10 @@ int main() {
     bool firstUsr = true;
     double version = 0.7;
 
+
+    thread t1(listenForIncomingConnection, own_address); // thread #2
+
+
     if (firstUsr) {
         if (FirstTimeconnect(initServer, version)) {
             string knownClient = initServer;
@@ -64,12 +73,9 @@ int main() {
         }
     }
 
-    thread t1(listenForIncomingConnection, own_address); // thread #2
-    thread t2(FirstTimeconnect, initServer, version); // thread #3
-
 
     t1.join(); 
-    t2.join(); 
+ 
     return 0;
 
     //listenForIncomingConnection(own_address);

@@ -18,21 +18,27 @@
     <ClCompile Include="main-win.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Source2.cpp">
+    <ClCompile Include="initWinsock.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="initWinsock.cpp">
+    <ClCompile Include="listen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="connect.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Header2.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="initWinsock.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="h2.h">
+    <ClInclude Include="connect.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="linuxLib.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="listen.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
