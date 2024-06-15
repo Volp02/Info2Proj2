@@ -1,4 +1,4 @@
-#include "DatStorage.h"
+#include "DataStorage.h"
 #ifdef _WIN32 // Windows-spezifischer Code
 #include "initWinsock.h"
 typedef int socklen_t;
@@ -21,8 +21,10 @@ typedef int socklen_t;
 #define BUFFER_SIZE 1024
 
 
-int IPStorage()
+std::vector<std::string> storeIP(std::vector IPStr, std::string IP)
 {
+	IPStr.push_back(IP);
 
-	std::vector<std::string> knownIDs = { 0 };
+	
 }
+
