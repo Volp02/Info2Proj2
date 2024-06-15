@@ -26,7 +26,12 @@ bool storeMessageID(std::vector<int> &MessageID_Vector, int MessageID)
 	MessageID_Vector.push_back(MessageID);
 }
 
+int createMessageID()
+{
+	srand(time(NULL));
 
+	return rand() % 999999;
+}
 
 std::string giveIP(std::vector<std::string>& IPStr)
 {
