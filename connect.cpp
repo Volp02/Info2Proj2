@@ -27,9 +27,13 @@ bool FirstTimeconnect(string firstIP, float version)
         return false;
     }
 
+    cout <<"FirstTimeConnect: socket created\n";
+
     // 2. Server-Adresse konfigurieren
     serv_addr.sin_family = AF_INET;   // IPv4-Adressfamilie
     serv_addr.sin_port = htons(PORT); // Portnummer in Netzwerk-Byte-Reihenfolge umwandeln
+
+    cout << "FirstTimeConnect: port set\n";  
 
     // Konvertiert IPv4-Adresse von Text zu Binärformat
     if (inet_pton(AF_INET, firstIP.c_str(), &serv_addr.sin_addr) <= 0)
@@ -41,12 +45,15 @@ bool FirstTimeconnect(string firstIP, float version)
     //std::cout << "Adresse Konvertiert\n";
 
     // 3. Verbindung zum Server herstellen
-    if (connect(client_socket, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
-    {
-        //std::cerr << "Verbindungsfehler: " << strerror(errno) << std::endl;
-        std::cerr << "Verbindungsfehler\n Couldnt connect to Server" << firstIP << endl;
-        return false; // Beenden mit Fehlercode 1
-    }
+    connect(client_socket, (struct sockaddr*)&serv_addr, sizeof(serv_addr));
+    
+    #ifdef _WIN32
+        int error_code = WSAGetLastError(); // Fehlercode abrufen
+        std::cerr << "Verbindungsfehler: " << error_code << std::endl;
+    #else
+        std::cerr << "Verbindungsstatus: " << strerror(errno) << std::endl;
+    #endif
+    
     std::cout << "FirstTimeConnect: Verbunden zum Server " << firstIP << endl ;
 
     // 4. initiate handshake
