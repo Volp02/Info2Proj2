@@ -111,11 +111,12 @@ bool backConnectSend(string ownIP, string sendIP)
         std::cerr << "Verbindungsfehler\n Couldnt connect to Server" << sendIP << endl;
         return false; // Beenden mit Fehlercode 1
     }
-    std::cout << "Verbunden zum Server " << ownIP << endl;
+    std::cout << "Verbunden zum Server " << sendIP << endl;
 
 
     string message = "BACKCONNECT " + ownIP;
 
     send(clientIP_socket, message.c_str(), message.length(), 0); // Senden der Nachricht an den Server
     //std::cout << "Nachricht gesendet: " << message << std::endl;
+    return true;
 }
