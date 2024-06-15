@@ -94,7 +94,7 @@ bool backConnectSend(string ownIP, string sendIP)
     serv_addr.sin_port = htons(PORT); // Portnummer in Netzwerk-Byte-Reihenfolge umwandeln
 
     // Konvertiert IPv4-Adresse von Text zu Binärformat
-    if (inet_pton(AF_INET, ownIP.c_str(), &serv_addr.sin_addr) <= 0)
+    if (inet_pton(AF_INET, sendIP.c_str(), &serv_addr.sin_addr) <= 0)
     {
         std::cerr << "Ungültige Adresse oder Adresse nicht unterstützt\n";
         return false; // Beenden mit Fehlercode 1
