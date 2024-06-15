@@ -70,12 +70,14 @@ int main() {
             cout << "connected to client " << knownClient << endl;
 
             backConnectSend(own_address, initServer);
+            FirstTimeconnect(sendFriendRequest(initServer),version);
 
         }
         else {
             cout << "no connection established, acting as first Node!" << endl;
         }
     }
+
 
     thread t1(listenForIncomingConnection, own_address, version); // thread #2
 

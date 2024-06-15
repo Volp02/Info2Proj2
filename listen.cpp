@@ -102,6 +102,8 @@ void listenForIncomingConnection(string ownIP, double OwnVersion)
 
                 //send(acceptSocket, IP.c_str(), IP.length(), 0)
             }
+            string SENDResponse(dataBuffer, 4);
+
         }
     } // Ende der Schleife
 
