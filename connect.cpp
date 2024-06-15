@@ -79,7 +79,7 @@ bool FirstTimeconnect(string firstIP, float version)
 
     return false; // Erfolgreiche Beendigung
 }
-bool backConnectSend(string ownIP)
+bool backConnectSend(string ownIP, string sendIP)
 {
     struct sockaddr_in serv_addr; // Struktur für die Server-Adresse
     int clientIP_socket;            // Socket-Descriptor des Clients
@@ -103,13 +103,13 @@ bool backConnectSend(string ownIP)
     if (connect(clientIP_socket, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) < 0)
     {
         //std::cerr << "Verbindungsfehler: " << strerror(errno) << std::endl;
-        std::cerr << "Verbindungsfehler\n Couldnt connect to Server" << firstIP << endl;
+        std::cerr << "Verbindungsfehler\n Couldnt connect to Server" << sendIP << endl;
         return false; // Beenden mit Fehlercode 1
     }
     std::cout << "Verbunden zum Server " << ownIP << endl;
 
 
-    string message = "BACKCONNECT/" + ownIP;
+    string message = "BACKCONNECT " + ownIP;
 
     send(clientIP_socket, message.c_str(), message.length(), 0); // Senden der Nachricht an den Server
     //std::cout << "Nachricht gesendet: " << message << std::endl;
