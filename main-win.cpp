@@ -26,11 +26,6 @@ int main() {
     #ifdef _WIN32 
         initWinsock();
     #endif
-    
-    // -------- init winsock --------
-    //initWinsock();
-    //-------------------------------
-
 
     cout << "enter own IP (or only last 3 digits):" << endl;
     
