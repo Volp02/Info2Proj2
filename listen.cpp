@@ -80,7 +80,7 @@ void listenForIncomingConnection(string ownIP, double OwnVersion)
 
             string BackconnectResponse (dataBuffer, 11);
             if (!(strcmp(BackconnectResponse.c_str(), "BACKCONNECT"))) {
-                string responseIP(dataBuffer + 11);
+                string responseIP(dataBuffer + 12);
                 FirstTimeconnect(responseIP, OwnVersion);    
             }
             
