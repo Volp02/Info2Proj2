@@ -52,7 +52,7 @@ int main() {
     }
 
     bool firstUsr = true;
-    double version = 0.7;
+    float version = 0.7;
 
     if (firstUsr) {
         if (FirstTimeconnect(initServer, version)) {
