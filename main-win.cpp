@@ -34,6 +34,7 @@ int main() {
     string addressStart = "192.168.178.";
     string own_address;
     std::vector<std::string> knownIPs;
+    std::vector<int> usedMsgIDs;
 
     getline(cin, own_address);
     
@@ -57,7 +58,7 @@ int main() {
     cout << "are you the first node? (1 / 0)";
     cin >> firstUsr;
     
-    float version = 0.7;
+    double version = 0.7;
 
 
     
@@ -79,7 +80,9 @@ int main() {
     }
 
 
-    thread t1(listenForIncomingConnection, own_address, version, knownIPs); // thread #2
+    thread t1(listenForIncomingConnection, own_address, version, std::ref(knownIPs), std::ref(usedMsgIDs)); // thread #2
+
+  
 
     t1.join(); 
  

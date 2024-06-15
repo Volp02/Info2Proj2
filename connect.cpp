@@ -14,7 +14,7 @@ typedef int socklen_t;
 
 using namespace std;
 
-bool FirstTimeconnect(string firstIP, float version)
+bool FirstTimeconnect(string firstIP, double version)
 {
     cout << "FirstTimeConnect: connectint to:  " << firstIP << endl;
     struct sockaddr_in serv_addr; // Struktur für die Server-Adresse

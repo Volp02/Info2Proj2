@@ -104,8 +104,9 @@ void listenForIncomingConnection(string ownIP, double OwnVersion, vector<string>
                 IP = giveIP(IPStr);
                 send(acceptSocket, IP.c_str(), IP.length(), 0);
             }
+
             string SENDResponse(dataBuffer, 4);
-            if (!(strcmp(BackconnectResponse.c_str(), "SEND"))) {
+            if (!(strcmp(SENDResponse.c_str(), "SEND"))) {
                 
                 string MessageToForward(dataBuffer);
                 string RecevedMessageID (dataBuffer + 5, 11);
