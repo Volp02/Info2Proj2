@@ -59,7 +59,7 @@ int main() {
     double version = 0.7;
 
 
-    thread t1(listenForIncomingConnection, own_address); // thread #2
+    thread t1(listenForIncomingConnection, own_address, version); // thread #2
 
 
     if (firstUsr) {
