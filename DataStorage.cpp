@@ -21,10 +21,31 @@ typedef int socklen_t;
 #define BUFFER_SIZE 1024
 
 
-std::vector<std::string> storeIP(std::vector<std::string> IPStr, std::string IP)
+std::vector<std::string> storeIP(std::vector<std::string> &IPStr, std::string IP)
 {
 	IPStr.push_back(IP);
 
 	return IPStr;
+}
+
+std::string giveID(std::vector<std::string>& IPStr, int count)
+{
+	if (IPStr.empty())
+	{
+		std::cout << "No ID's to pull from! " << std::endl;
+		
+	}
+	if (IPStr.size() == 1)
+	{
+		return IPStr[0];
+	}
+	else
+	{
+		std::string output = IPStr[IPStr.size()-count];
+		count++;
+		return output;
+	}
+
+
 }
 
