@@ -1,9 +1,14 @@
+#ifdef _WIN32 // Windows-spezifischer Code
+#include "initWinsock.h"
+typedef int socklen_t;
+#else // Linux-spezifischer Code
+#include "linuxLib.h"
+#define closesocket close
+#endif
+
+
 #include "connect.h"
 #include <sstream>
-
-#include "initWinsock.h"
-//#include "linuxLib.h"
-//close  -  closesocket
 
 #define PORT 26000
 
