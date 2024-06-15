@@ -25,6 +25,6 @@ std::vector<std::string> storeIP(std::vector IPStr, std::string IP)
 {
 	IPStr.push_back(IP);
 
-	
+	return IPStr;
 }
 
