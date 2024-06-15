@@ -2,7 +2,6 @@
 
 
 #include <iostream>
-#include <string.h>
 #include <string>
 #include <thread>
 #include <vector>
@@ -37,9 +36,15 @@ std::string giveID(std::vector<std::string>& IPStr)
 	}
 	else
 	{
-		std::string output = IPStr[IPStr.size()-count];
-		count++;
-		return output;
+		if (IPStr.size() > count)
+		{
+			std::string output = IPStr[IPStr.size() - count];
+			count++;
+			return output;
+		}
+	
+
+		
 	}
 
 
