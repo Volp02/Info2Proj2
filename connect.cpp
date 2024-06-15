@@ -16,7 +16,7 @@ using namespace std;
 
 bool FirstTimeconnect(string firstIP, float version)
 {
-    cout << "FirstTimeConnect " << firstIP << endl;
+    cout << "FirstTimeConnect: connectint to:  " << firstIP << endl;
     struct sockaddr_in serv_addr; // Struktur für die Server-Adresse
     int client_socket;            // Socket-Descriptor des Clients
 
@@ -47,7 +47,7 @@ bool FirstTimeconnect(string firstIP, float version)
         std::cerr << "Verbindungsfehler\n Couldnt connect to Server" << firstIP << endl;
         return false; // Beenden mit Fehlercode 1
     }
-    std::cout << "Verbunden zum Server " << firstIP << endl ;
+    std::cout << "FirstTimeConnect: Verbunden zum Server " << firstIP << endl ;
 
     // 4. initiate handshake
     std::stringstream ss;
@@ -70,12 +70,12 @@ bool FirstTimeconnect(string firstIP, float version)
 
     if (!strcmp(response.c_str(), "INFO2 OK\n\n"))
     {
-        std::cout << "handshake succsessfull \n";
+        std::cout << "FirstTimeConnect: handshake succsessfull -> receved 'INF2 OK'!\n";
         std::cout << response.c_str() << endl;
         return true;
     }
 
-    cout << "handshake failed\nNo connection established with " << firstIP;
+    cout << "FirstTimeConnect: handshake failed\nNo connection established with " << firstIP;
     //cout << response.c_str() << endl;
     return false;
 
@@ -101,22 +101,22 @@ bool backConnectSend(string ownIP, string sendIP)
     // Konvertiert IPv4-Adresse von Text zu Binärformat
     if (inet_pton(AF_INET, sendIP.c_str(), &serv_addr.sin_addr) <= 0)
     {
-        std::cerr << "Ungültige Adresse oder Adresse nicht unterstützt bei backconnect\n";
+        std::cerr << "Backconnect: Ungültige Adresse oder Adresse nicht unterstützt bei backconnect\n";
         return false; // Beenden mit Fehlercode 1
     }
     // 3. Verbindung zum Server herstellen
     if (connect(clientIP_socket, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) < 0)
     {
         //std::cerr << "Verbindungsfehler: " << strerror(errno) << std::endl;
-        std::cerr << "Verbindungsfehler\n Couldnt connect to Server" << sendIP << endl;
+        std::cerr << "Backconnect: Verbindungsfehler\n Couldnt connect to Server" << sendIP << endl;
         return false; // Beenden mit Fehlercode 1
     }
-    std::cout << "Verbunden zum Server " << sendIP << endl;
+    std::cout << "Backconnect: Verbunden zum Server " << sendIP << endl;
 
 
     string message = "BACKCONNECT " + ownIP;
 
     send(clientIP_socket, message.c_str(), message.length(), 0); // Senden der Nachricht an den Server
-    //std::cout << "Nachricht gesendet: " << message << std::endl;
+    std::cout << "Backconnect: Nachricht gesendet: " << message << std::endl;
     return true;
 }

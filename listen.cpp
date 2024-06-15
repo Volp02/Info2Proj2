@@ -63,6 +63,7 @@ void listenForIncomingConnection(string ownIP, double OwnVersion)
             string ConnectResponse(dataBuffer, 14);
             if (!(strcmp(ConnectResponse.c_str(), "INFO2 CONNECT/")))
             {
+                cout << "receved Connection attempt" << endl;
                 std::stringstream ss2;
                 string responseVers(dataBuffer + 14);
                 ss2 << responseVers;
@@ -74,6 +75,7 @@ void listenForIncomingConnection(string ownIP, double OwnVersion)
                     std::string acceptConnection = "INFO2 OK\n\n";
 
                     send(acceptSocket, acceptConnection.c_str(), acceptConnection.length(), 0);
+                    cout << "responds with INFO2 OK! " << endl;
                     closesocket(acceptSocket);
                 }
                 else
@@ -86,6 +88,7 @@ void listenForIncomingConnection(string ownIP, double OwnVersion)
 
             string BackconnectResponse (dataBuffer, 11);
             if (!(strcmp(BackconnectResponse.c_str(), "BACKCONNECT"))) {
+                cout << "receved backConnection attempt" << endl;
                 string responseIP(dataBuffer + 12);
                 cout << responseIP;
                 FirstTimeconnect(responseIP, OwnVersion);    
