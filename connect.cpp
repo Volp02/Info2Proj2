@@ -16,7 +16,7 @@ using namespace std;
 
 bool FirstTimeconnect(string firstIP, float version)
 {
-
+    cout << "FirstTimeConnect " << firstIP << endl;
     struct sockaddr_in serv_addr; // Struktur für die Server-Adresse
     int client_socket;            // Socket-Descriptor des Clients
 
@@ -101,7 +101,7 @@ bool backConnectSend(string ownIP, string sendIP)
     // Konvertiert IPv4-Adresse von Text zu Binärformat
     if (inet_pton(AF_INET, sendIP.c_str(), &serv_addr.sin_addr) <= 0)
     {
-        std::cerr << "Ungültige Adresse oder Adresse nicht unterstützt\n";
+        std::cerr << "Ungültige Adresse oder Adresse nicht unterstützt bei backconnect\n";
         return false; // Beenden mit Fehlercode 1
     }
     // 3. Verbindung zum Server herstellen

@@ -87,6 +87,7 @@ void listenForIncomingConnection(string ownIP, double OwnVersion)
             string BackconnectResponse (dataBuffer, 11);
             if (!(strcmp(BackconnectResponse.c_str(), "BACKCONNECT"))) {
                 string responseIP(dataBuffer + 12);
+                cout << responseIP;
                 FirstTimeconnect(responseIP, OwnVersion);    
             }
             
