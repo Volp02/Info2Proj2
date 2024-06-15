@@ -10,9 +10,11 @@ typedef int socklen_t;
 #include <string.h>
 #include <string>
 #include <thread>
+#include <vector>
 
 #include "connect.h"
 #include "listen.h"
+#include "DataStorage.h"
 
 
 #define PORT 26000
@@ -31,6 +33,7 @@ int main() {
     
     string addressStart = "192.168.178.";
     string own_address;
+    std::vector<std::string> knownIDs = { 0 };
 
     getline(cin, own_address);
     
