@@ -54,8 +54,11 @@ int main() {
         initServer = addressStart + initServer;
         cout << "Address set to " << initServer << endl;
     }
-
-    bool firstUsr = true;
+    
+    bool firstUsr;
+    cout << "are you the first node? (1 / 0)";
+    cin >> firstUsr;
+    
     float version = 0.7;
 
 
