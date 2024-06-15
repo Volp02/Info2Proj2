@@ -27,9 +27,6 @@
     <ClCompile Include="connect.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="createSocket.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="initWinsock.h">
@@ -42,9 +39,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="listen.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="createSocket.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

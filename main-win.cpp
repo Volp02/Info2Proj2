@@ -32,8 +32,6 @@ int main() {
     //initWinsock();
     //-------------------------------
 
-    ListeningSocket listener(26000);
-
 
     cout << "enter own IP (or only last 3 digits):" << endl;
     
@@ -61,6 +59,10 @@ int main() {
     bool firstUsr = true;
     double version = 0.7;
 
+
+    thread t1(listenForIncomingConnection, own_address); // thread #2
+
+
     if (firstUsr) {
         if (FirstTimeconnect(initServer, version)) {
             string knownClient = initServer;
@@ -71,12 +73,9 @@ int main() {
         }
     }
 
-    thread t1(listenForIncomingConnection, own_address); // thread #2
-    thread t2(FirstTimeconnect, initServer, version); // thread #3
-
 
     t1.join(); 
-    t2.join(); 
+ 
     return 0;
 
     //listenForIncomingConnection(own_address);
