@@ -24,9 +24,27 @@ std::vector<std::string> storeIP(std::vector<std::string> &IPStr, const std::str
 bool storeMessageID(std::vector<int> &MessageID_Vector, int MessageID)
 {
 	MessageID_Vector.push_back(MessageID);
+	return 0;
+	
 }
 
+int createMessageID()
+{
+	srand(time(NULL));
 
+	return rand() % 999999;
+}
+
+bool checkMessageID(std::vector<int>& MessageID_Vector, int MessageID)
+{
+	for (int i = 0; i < MessageID_Vector.size(); i++)
+	{
+		if (MessageID == MessageID_Vector[i])
+			return 0;
+		else
+			return 1;
+	}
+}
 
 std::string giveIP(std::vector<std::string>& IPStr)
 {
