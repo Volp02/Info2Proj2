@@ -36,9 +36,11 @@ SocketClss firstHandshakeHandler(string ownIP, double OwnVersion, vector<SocketC
     ServerSocket.S_listen(PORT);
     cout << "Warte auf Verbindungen..." << endl;
     
+    
     // Unendliche Schleife, um mehrere Client-Verbindungen zu akzeptieren
-    while (true)
+    for (int i; i < 1000; i++)
     {
+
         SocketClss acceptSocket = ServerSocket.S_acceptConnection();
         // 6. recieve data
         char dataBuffer[1024] = {0};
