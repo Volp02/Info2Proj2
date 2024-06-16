@@ -85,7 +85,10 @@ int listenForIncomingConnection(SocketClss &socket, string ownIP, double OwnVers
     {
         // 6. recieve data
         char dataBuffer[1024] = {0};
-        int recievedData = socket.receiveData(dataBuffer, 1024); // receive handshake
+        //int recievedData = socket.receiveData(dataBuffer, 1024); // receive handshake
+        int recievedData = recv(socket.sockfd, dataBuffer, 1024, 0);
+        std::cout << "data recieved: " << dataBuffer << std::endl;
+      
 
         string connectResponse(dataBuffer);
         cout << "dataBuffer string " << connectResponse << endl;
