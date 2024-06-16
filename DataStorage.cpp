@@ -53,13 +53,14 @@ int countIPs(std::vector<SocketClss> &IPStr){
 	return IPStr.size();
 }
 
-	std::string giveIP(std::vector<SocketClss> &IPStr)
+std::string giveIP(std::vector<SocketClss> &IPStr)
 {
 	static int count = 1;
 
 	if (IPStr.empty())
 	{
 		std::cout << "No ID's to pull from! " << std::endl;
+		return "0.0.0.0";
 	}
 	if (IPStr.size() == 1)
 	{
