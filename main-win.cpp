@@ -23,6 +23,19 @@ typedef int socklen_t;
 
 using namespace std;
 
+static int waitForConnection(double version, string own_address, vector<SocketClss>& establishedConnections, vector<int>& usedMsgIDs) {
+ 
+    SocketClss InitSocketIncoming;
+    thread listeningThread([&]() {
+    listenForIncomingConnection(InitSocketIncoming, own_address, version, std::ref(establishedConnections), std::ref(usedMsgIDs));
+    });
+    // Detach the thread to run independently
+    listeningThread.detach();
+    return 100;
+}
+
+
+
 int main()
 {
 
@@ -63,12 +76,6 @@ int main()
 
     double version = 0.6;
 
-    // listenForIncomingConnection, own_address, version, knownIPs, usedMsgIDs;
-    
-    // listenForIncomingConnection(std::ref(ServerSocket), own_address, version, std::ref(establishedConnections),std::ref(usedMsgIDs));
-
-    // thread listening(listenForIncomingConnection(std::ref(ServerSocket), own_address, version, std::ref(establishedConnections),std::ref(usedMsgIDs)));
-
     if (!firstUsr)
     {
 
@@ -100,47 +107,18 @@ int main()
         }
     }
 
-    SocketClss ServerSocket;
+    thread t1(waitForConnection, version, own_address, std::ref(establishedConnections), std::ref(usedMsgIDs));
+    t1.join();
 
-    ServerSocket.S_createAndBind(PORT); // create and bind socket
-    ServerSocket.S_listen();            // listen for incoming connections
 
-    listenForIncomingConnection(ServerSocket, own_address, version, establishedConnections, usedMsgIDs);
+
+
+    //listenForIncomingConnection(ServerSocket, own_address, version, establishedConnections, usedMsgIDs);
     //std::thread listening([&]()
       //                    { listenForIncomingConnection(std::ref(ServerSocket), own_address, version,
         //                                                std::ref(establishedConnections), std::ref(usedMsgIDs)); });
     
 
-
-
-    
-
-    /*
-    SocketClss InitSocket;
-    InitSocket = firstHandshake(own_address, PORT, version);
-
-    if (!firstUsr) {
-        if (InitSocket.sockfd >= 0) {
-
-            string knownClient = initServerIP;
-            cout << "connected to client " << knownClient << endl;
-
-            InitSocket.sendData("BACKCONNECT " + own_address);
-
-            InitSocket.sendData("FRIEND REQUEST\n\n");
-            char dataBuffer[128] = { 0 };
-
-            InitSocket.receiveData(dataBuffer, 128);
-
-            string IPasString(dataBuffer);
-            storeIP(knownIPs, IPasString);
-
-        }
-        else {
-            cout << "no connection established, acting as first Node!" << endl;
-            storeIP(knownIPs, own_address);
-        }
-    }*/
 
     //listening.join();
 

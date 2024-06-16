@@ -29,8 +29,12 @@ using std::vector;
 
 
 int listenForIncomingConnection(SocketClss& socket, string ownIP, double OwnVersion, vector<SocketClss> &IPStr, vector<int> &MessageIDs)
-{
+{   
+    
+    socket.S_createAndBind(PORT); // create and bind socke
+    cout << "bind done! ----"; 
 
+    socket.S_listen(PORT);
     cout << "Warte auf Verbindungen..." << endl;
     SocketClss acceptSocket = socket.S_acceptConnection();
     // Unendliche Schleife, um mehrere Client-Verbindungen zu akzeptieren
@@ -40,10 +44,7 @@ int listenForIncomingConnection(SocketClss& socket, string ownIP, double OwnVers
         // 6. recieve data
         char dataBuffer[1024] = {0};
         int recieveData = socket.receiveData(dataBuffer, 1024);
-        if (true){
-            cout << "daten Erhalten" << dataBuffer << endl;
-            continue;
-        }
+
         {
             /* code */
         }
@@ -105,6 +106,7 @@ int listenForIncomingConnection(SocketClss& socket, string ownIP, double OwnVers
             
         }
 
+        cout << "whiling";
         
     } // Ende der Schleife
 
