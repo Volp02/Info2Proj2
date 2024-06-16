@@ -9,3 +9,4 @@ std::string giveIP(std::vector<SocketClss>& IPStr);
 bool checkMessageID(std::vector<int>& MessageID_Vector, int MessageID);
 int createMessageID();
 
+void UI_Startup();

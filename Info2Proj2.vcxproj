@@ -133,6 +133,7 @@
     <ClCompile Include="main-win.cpp" />
     <ClCompile Include="connect.cpp" />
     <ClCompile Include="Socket.cpp" />
+    <ClCompile Include="UI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataStorage.h" />
