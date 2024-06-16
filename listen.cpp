@@ -36,11 +36,11 @@ int listenForIncomingConnection(SocketClss& socket, string ownIP, double OwnVers
 
     socket.S_listen(PORT);
     cout << "Warte auf Verbindungen..." << endl;
-    SocketClss acceptSocket = socket.S_acceptConnection();
+    
     // Unendliche Schleife, um mehrere Client-Verbindungen zu akzeptieren
     while (true)
     {
-       
+        SocketClss acceptSocket = socket.S_acceptConnection();
         // 6. recieve data
         char dataBuffer[1024] = {0};
         int recieveData = socket.receiveData(dataBuffer, 1024);

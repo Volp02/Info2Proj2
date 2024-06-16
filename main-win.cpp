@@ -26,12 +26,7 @@ using namespace std;
 static int waitForConnection(double version, string own_address, vector<SocketClss>& establishedConnections, vector<int>& usedMsgIDs) {
  
     SocketClss InitSocketIncoming;
-    thread listeningThread([&]() {
-    listenForIncomingConnection(InitSocketIncoming, own_address, version, std::ref(establishedConnections), std::ref(usedMsgIDs));
-    });
-    // Detach the thread to run independently
-    listeningThread.detach();
-    return 100;
+    
 }
 
 
@@ -107,11 +102,22 @@ int main()
         }
     }
 
-    thread t1(waitForConnection, version, own_address, std::ref(establishedConnections), std::ref(usedMsgIDs));
+    SocketClss InitSocket;
+    
+    //thread t1(listenForIncomingConnection, InitSocket, version, own_address, std::ref(establishedConnections), std::ref(usedMsgIDs));
+
+    thread t1([&]() {
+    listenForIncomingConnection(InitSocket, own_address, version, std::ref(establishedConnections), std::ref(usedMsgIDs));
+    });
+    // Detach the thread to run independently
+    //listeningThread.join();
+    return 100;    
+
+    while(true){
+        
+    }
+
     t1.join();
-
-
-
 
     //listenForIncomingConnection(ServerSocket, own_address, version, establishedConnections, usedMsgIDs);
     //std::thread listening([&]()
