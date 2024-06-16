@@ -27,8 +27,6 @@ using std::endl;
 using std::string;
 using std::vector;
 
-SocketClss HandleFirstHandshake(SocketClss originalSocket,int Port, double OwnVersion) {
-}
 
 int listenForIncomingConnection(SocketClss& socket, string ownIP, double OwnVersion, vector<SocketClss> &IPStr, vector<int> &MessageIDs)
 {
