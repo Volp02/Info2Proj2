@@ -17,8 +17,11 @@ typedef int socklen_t;
 class SocketClss {
 public:
     SocketClss() : sockfd(-1) {}
-
+#ifdef _WIN32
+    SOCKET sockfd;
+#else
     int sockfd;
+#endif
     std::string ipAddress = "0.0.0.0";
 
     int getSocket(){
