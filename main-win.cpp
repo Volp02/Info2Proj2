@@ -1,3 +1,16 @@
+/*
+Projektarbeit 2 – P2PInfo
+Gruppe:
+Andreas Runge
+Matthias Friedl
+Lajos Billes
+
+Wir stimmen der Veröffentlichung unseres Source Code in anonymisierter Form zu.
+
+Copyright (C) 2024 [authors #1-#4]
+SPDX-License-Identifier: MIT
+*/
+
 #ifdef _WIN32 // Windows-spezifischer Code
 #include "initWinsock.h"
 typedef int socklen_t;
@@ -188,7 +201,7 @@ int main()
     while (true) {
         std::cout << "    ..........................................................\n";
         std::cout << "    .                                                        .\n";
-        std::cout << "    .      W�hlen Sie eine Aktion!                           .\n";
+        std::cout << "    .      W�hlen Sie eine Aktion!                           .\n";
         std::cout << "    .                                                        .\n";
         std::cout << "    .      hit [m] to write in the chat!                     .\n";
         std::cout << "    .      hit [s] to show who's connected!                  .\n";
