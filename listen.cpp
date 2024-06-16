@@ -103,6 +103,8 @@ int listenForIncomingConnection(SocketClss& socket, string ownIP, double OwnVers
             
         }
 
+        acceptSocket.closeSocket();
+
         cout << "whiling";
         
     } // Ende der Schleife
