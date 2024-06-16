@@ -24,14 +24,14 @@ typedef int socklen_t;
 using namespace std;
 
 
-static int waitForConnection(double version, string own_address, vector<string>& knownIPs, vector<int>& usedMsgIDs) {
+static int waitForConnection(double version, vector<string>& knownIPs, vector<int>& usedMsgIDs) {
 
     SocketClss InitSocketIncoming;
     while (true) {
         InitSocketIncoming = HandleFirstHandshake(PORT, version);
         if (InitSocketIncoming.sockfd >= 0) {
             thread* lissteningThread = new thread([&]() {
-                listenForIncomingConnection(std::ref(InitSocketIncoming), own_address, version, std::ref(knownIPs), std::ref(usedMsgIDs));
+                listenForIncomingConnection(std::ref(InitSocketIncoming), version, std::ref(knownIPs), std::ref(usedMsgIDs));
                 });
         }
     }
@@ -78,12 +78,14 @@ int main() {
 
     //listenForIncomingConnection, own_address, version, knownIPs, usedMsgIDs;
 
-    thread t1(waitForConnection,version,own_address, std::ref(knownIPs), std::ref(usedMsgIDs));
+    thread t1(waitForConnection,version, std::ref(knownIPs), std::ref(usedMsgIDs));
     
-    SocketClss InitSocket;
-    InitSocket = firstHandshake(own_address, PORT, version);
+    
 
     if (!firstUsr) {
+        SocketClss InitSocket;
+        InitSocket = firstHandshake(initServerIP, PORT, version);
+
         if (InitSocket.sockfd >= 0) {
 
             string knownClient = initServerIP;

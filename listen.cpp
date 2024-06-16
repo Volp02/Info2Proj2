@@ -11,6 +11,7 @@ typedef int socklen_t;
 #include <sstream>
 #include <iostream>
 #include <string.h> // Include the string.h header
+#include <iomanip> // für setprecision
 
 
 #include "connect.h"
@@ -63,6 +64,7 @@ SocketClss HandleFirstHandshake(int Port, double OwnVersion) {
     if (connectResponse == "INFO2 CONNECT/") {
 
         std::cout << "received Connection attempt" << std::endl;
+
         std::stringstream ss2;
         std::string responseVers(dataBuffer + 14);
         ss2 << responseVers;
@@ -89,7 +91,7 @@ SocketClss HandleFirstHandshake(int Port, double OwnVersion) {
     return clientSocket; // Gib den Client-Socket zurück
 }
 
-int listenForIncomingConnection(static SocketClss& socket, string ownIP, double OwnVersion, vector<string> &IPStr, vector<int> &MessageIDs)
+int listenForIncomingConnection(static SocketClss& socket, double OwnVersion, vector<string> &IPStr, vector<int> &MessageIDs)
 {
 
     cout << "Warte auf Verbindungen..." << endl;
@@ -112,8 +114,22 @@ int listenForIncomingConnection(static SocketClss& socket, string ownIP, double 
             if (!(strcmp(BackconnectResponse.c_str(), "BACKCONNECT"))) {
                 cout << "receved backConnection attempt" << endl;
                 string responseIP(dataBuffer + 12);
+                cout << " with IP: " << responseIP << endl;
                 cout << responseIP;
-                firstHandshake(responseIP, PORT ,OwnVersion);    
+                
+                std::stringstream ss;
+                ss << std::fixed << std::setprecision(1) << OwnVersion; // Formatierung auf eine Nachkommastelle
+
+                string message = "INFO2 CONNECT/" + ss.str() + "\n\n";
+
+                socket.sendData(message);
+                socket.receiveData(dataBuffer, 1024);
+                string BackConnectResponse(dataBuffer);
+                if (strcmp(BackConnectResponse.c_str(), "INFO2 OK\n\n") > 0) {
+                    socket.closeSocket();
+                    cout << "Backconnect failed! Closing connection!" << endl;
+                }
+                  
             }
             
             string FriendRqResponse(dataBuffer, 18);
@@ -127,6 +143,8 @@ int listenForIncomingConnection(static SocketClss& socket, string ownIP, double 
             string SENDResponse(dataBuffer, 4);
             if (!(strcmp(SENDResponse.c_str(), "SEND"))) {
                 
+                string DEBUGGSTR(dataBuffer);
+                cout << "receved send: " << DEBUGGSTR << endl;
                 string MessageToForward(dataBuffer);
                 string RecevedMessageID (dataBuffer + 5, 11);
                 std::stringstream ss3;

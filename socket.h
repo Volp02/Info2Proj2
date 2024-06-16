@@ -119,6 +119,7 @@ public:
 
     // Daten senden
     bool sendData(const std::string& message) {
+        std::cout << "sending: " << message << std::endl;
         if (send(sockfd, message.c_str(), message.length(), 0) < 0) {
 #ifdef _WIN32
             char buffer[256]; // Angemessene Puffergröße
@@ -135,6 +136,10 @@ public:
     // Daten empfangen
     int receiveData(char* buffer, int bufferSize) {
         return recv(sockfd, buffer, bufferSize, 0);
+        
+        //DEBUG:
+        std::string debug(buffer);
+        std::cout << "Daten receved: " << debug << std::endl;
     }
 
     // Socket schließen

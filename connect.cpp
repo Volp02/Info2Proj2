@@ -6,9 +6,10 @@ typedef int socklen_t;
 #define closesocket close
 #endif
 
+#include <sstream>
+#include <iomanip> // für setprecision
 
 #include "connect.h"
-#include <sstream>
 #include "socket.h"
 
 #define PORT 26000
@@ -24,7 +25,12 @@ SocketClss firstHandshake(string IP, int Port, double OwnVersion) {
         return SocketClss(); // Rückgabe eines leeren MySocket-Objekts im Fehlerfall
     }
 
-    serverSocket.sendData("INFO2 CONNECT/" + std::to_string(OwnVersion));
+    std::stringstream ss;
+    ss << std::fixed << std::setprecision(1) << OwnVersion; // Formatierung auf eine Nachkommastelle
+
+    string message = "INFO2 CONNECT/" + ss.str() + "\n\n";
+
+    serverSocket.sendData(message);
 
     char dataBuffer[1024] = { 0 };
     int receiveData = serverSocket.receiveData(dataBuffer, 1024);
