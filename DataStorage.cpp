@@ -1,6 +1,5 @@
 #include "DataStorage.h"
 
-
 #include <iostream>
 #include <string>
 #include <thread>
@@ -13,19 +12,17 @@
 #define PORT 26000
 #define BUFFER_SIZE 1024
 
-
-std::vector<SocketClss> storeIP(std::vector<SocketClss> &IPStr, const SocketClss& IP)
+bool storeIP(std::vector<SocketClss> &IPStr, const SocketClss &IP)
 {
 	IPStr.push_back(IP);
 
-	return IPStr;
+	return true;
 }
 
 bool storeMessageID(std::vector<int> &MessageID_Vector, int MessageID)
 {
 	MessageID_Vector.push_back(MessageID);
-	return 0;
-	
+	return 1;
 }
 
 int createMessageID(std::vector<int> &MessageID_Vector)
@@ -35,13 +32,13 @@ int createMessageID(std::vector<int> &MessageID_Vector)
 	{
 		srand(time(NULL));
 		msgID = rand() % 999999;
-	}while (!checkMessageID(MessageID_Vector, msgID));
-	
+	} while (!checkMessageID(MessageID_Vector, msgID));
+
 	storeMessageID(MessageID_Vector, msgID);
 	return msgID;
 }
 
-bool checkMessageID(std::vector<int>& MessageID_Vector, int MessageID)
+bool checkMessageID(std::vector<int> &MessageID_Vector, int MessageID)
 {
 	for (int i = 0; i < MessageID_Vector.size(); i++)
 	{
@@ -52,16 +49,17 @@ bool checkMessageID(std::vector<int>& MessageID_Vector, int MessageID)
 	}
 }
 
+int countIPs(std::vector<SocketClss> &IPStr){
+	return IPStr.size();
+}
 
-
-std::string giveIP(std::vector<SocketClss>& IPStr)
+	std::string giveIP(std::vector<SocketClss> &IPStr)
 {
 	static int count = 1;
 
 	if (IPStr.empty())
 	{
 		std::cout << "No ID's to pull from! " << std::endl;
-		
 	}
 	if (IPStr.size() == 1)
 	{
@@ -75,11 +73,5 @@ std::string giveIP(std::vector<SocketClss>& IPStr)
 			count++;
 			return output;
 		}
-	
-
-		
 	}
-
-
 }
-

@@ -24,12 +24,11 @@ using std::endl;
 using std::string;
 using std::vector;
 
-SocketClss firstHandshakeHandler(string ownIP, double OwnVersion, vector<SocketClss> &IPStr, vector<int> &MessageIDs)
+SocketClss firstHandshakeHandler(string ownIP, double OwnVersion)
 {
 
     SocketClss ServerSocket;
     ServerSocket.S_createAndBind(PORT); // create and bind socke
-    cout << "bind done! ----";
 
     ServerSocket.S_listen(PORT);
     cout << "Warte auf Verbindungen..." << endl;

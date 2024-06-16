@@ -23,52 +23,41 @@ typedef int socklen_t;
 
 using namespace std;
 
-static int listenForMessage(SocketClss socket, double version, string own_address, vector<SocketClss>& establishedConnections, vector<int>& usedMsgIDs) {
- 
-    cout << "listenForMessage started a process" << endl;
-    
-    listenForIncomingConnection(socket, own_address, version, establishedConnections, usedMsgIDs);
-    
-    return 0;
-    
-}
+int listenForIncomingMessages(vector<SocketClss> &establishedConnections, vector<int> &usedMsgIDs, string ownIP, double OwnVersion);
 
-
-
-
-int restOfProgramm(bool firstUsr, string initServerIP, vector<SocketClss>& establishedConnections){
-    if (!firstUsr)
+int listenForIncomingConnectionsThread(vector<SocketClss> &establishedConnections, vector<int> &usedMsgIDs, string ownIP, double OwnVersion)
+{
+    while (true)
     {
-        cout << "restOfProgramm started a process" << endl;
+        if (storeIP(establishedConnections, firstHandshakeHandler(ownIP, OwnVersion)))
 
-        SocketClss FirstConnectSocket;
-        cout << "connecting to server :" << initServerIP << endl;
-        FirstConnectSocket.C_createAndConnect(initServerIP, PORT); // connect to server
-
-        FirstConnectSocket.sendData("INFO2 CONNECT/0.6\n\n"); // send handshake
-
-        char dataBuffer[1024] = {0};
-        cout << "recieving handshake response"<< endl;
-        int recievedData = FirstConnectSocket.receiveData(dataBuffer, 1024); // receive handshake
-
-        string connectResponse(dataBuffer);
-
-        if (recievedData >= 0 && connectResponse == "INFO2 OK\n\n")
-        { // check handshake response
-            cout << "handshake successful\n"
-                 << endl;
-            storeIP(establishedConnections, FirstConnectSocket);       // store server IP
-            
-        }
-        else
-        {
-            cout << "handshake not successful, returning" << "connectResponse == INFO2 OK: " << (connectResponse == "INFO2 OK\n\n") << endl; // handshake not successful, close socket
-            FirstConnectSocket.closeSocket();
-        }
+        listenForIncomingMessages(establishedConnections, usedMsgIDs, ownIP, OwnVersion);
     }
+}
+
+int listenForIncomingMessages(vector<SocketClss> &establishedConnections, vector<int> &usedMsgIDs, string ownIP, double OwnVersion)
+{
+    int ipCount = countIPs(establishedConnections) - 1;
+
+    std::thread* listening = new std::thread([&]() {
+    listenForIncomingConnection(std::ref(establishedConnections[ipCount]), ownIP, OwnVersion, 
+                                std::ref(establishedConnections), std::ref(usedMsgIDs));
+});
+
+
+    listening->join();
     return 0;
 }
 
+static int listenForMessage(SocketClss socket, double version, string own_address, vector<SocketClss> &establishedConnections, vector<int> &usedMsgIDs)
+{
+
+    cout << "listenForMessage started a process" << endl;
+
+    listenForIncomingConnection(socket, own_address, version, establishedConnections, usedMsgIDs);
+
+    return 0;
+}
 
 int main()
 {
@@ -76,7 +65,7 @@ int main()
 #ifdef _WIN32
     initWinsock();
 #endif
-    
+
     cout << "enter own IP (or only last 3 digits):" << endl;
 
     string addressStart = "192.168.178.";
@@ -109,59 +98,71 @@ int main()
     cin >> firstUsr;
 
     double version = 0.6;
+    SocketClss FirstConnectSocket;
 
+    if (!firstUsr)
+    {
+        cout << "restOfProgramm started a process" << endl;
 
-    restOfProgramm(firstUsr, initServerIP, establishedConnections);
+        
+        cout << "connecting to server :" << initServerIP << endl;
+        FirstConnectSocket.C_createAndConnect(initServerIP, PORT); // connect to server
+
+        FirstConnectSocket.sendData("INFO2 CONNECT/0.6\n\n"); // send handshake
+
+        char dataBuffer[1024] = {0};
+        cout << "recieving handshake response" << endl;
+        int recievedData = FirstConnectSocket.receiveData(dataBuffer, 1024); // receive handshake
+
+        string connectResponse(dataBuffer);
+
+        if (!(recievedData >= 0 && connectResponse == "INFO2 OK\n\n"))
+        {                                                                                                                                    // check handshake response
+            cout << "handshake not successful, returning" << "connectResponse == INFO2 OK: " << (connectResponse == "INFO2 OK\n\n") << endl; // handshake not successful, close socket
+            FirstConnectSocket.closeSocket();
+
+            
+        }
+         cout << "handshake successful\n" << endl;
+
+        storeIP(establishedConnections, FirstConnectSocket); // store server IP
+    }
+
+    try{
+
+        
+        //thread t1(listenForMessage, FirstConnectSocket, version, own_address, establishedConnections, usedMsgIDs);
+
+    }
+    catch (const char *e)
+    {
+        cout << e << endl;
+    }
+        
 
     SocketClss InitSocket;
 
+    thread t2(listenForIncomingConnectionsThread, std::ref(establishedConnections), std::ref(usedMsgIDs), own_address, version);
 
-    storeIP(establishedConnections, firstHandshakeHandler(own_address, version, establishedConnections, usedMsgIDs));
-    
     cout << "Handled firsttimeconnect" << endl;
-    
-    listenForIncomingConnection(establishedConnections[0],own_address, version, establishedConnections, usedMsgIDs);
 
-    sendMessage("test", createMessageID(usedMsgIDs), establishedConnections);
-
-    thread t2(listenForMessage, InitSocket, version, own_address, std::ref(establishedConnections), std::ref(usedMsgIDs));
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    //InitSocket = firstHandshakeHandler(own_address, version, establishedConnections, usedMsgIDs);
-    
-    //thread t1(ListenForConnections, own_address, version, std::ref(establishedConnections), std::ref(usedMsgIDs));
-    //thread t3(restOfProgramm,firstUsr, initServerIP, std::ref(establishedConnections));
-
-    //ListenForConnections(own_address, version, std::ref(establishedConnections), std::ref(usedMsgIDs));
-    //restOfProgramm(firstUsr, initServerIP, std::ref(establishedConnections));
-
-
-    //t2.join()
-
-    
 
     //t1.join();
-    
-    //t3.join();
+    //t2.join();
 
+    // InitSocket = firstHandshakeHandler(own_address, version, establishedConnections, usedMsgIDs);
 
+    // thread t1(ListenForConnections, own_address, version, std::ref(establishedConnections), std::ref(usedMsgIDs));
+    // thread t3(restOfProgramm,firstUsr, initServerIP, std::ref(establishedConnections));
+
+    // ListenForConnections(own_address, version, std::ref(establishedConnections), std::ref(usedMsgIDs));
+    // restOfProgramm(firstUsr, initServerIP, std::ref(establishedConnections));
+
+     t2.join();
+
+     //t1.join();
+
+    // t3.join();
 
     return 0;
 }
