@@ -42,7 +42,8 @@ SocketClss firstHandshakeHandler(string ownIP, double OwnVersion, vector<SocketC
         SocketClss acceptSocket = ServerSocket.S_acceptConnection();
         // 6. recieve data
         char dataBuffer[1024] = {0};
-        int recieveData = ServerSocket.receiveData(dataBuffer, 1024);
+        //recv(acceptSocket.getSocket(), dataBuffer, 1024, 0);
+        int recieveData = acceptSocket.receiveData(dataBuffer, 1024);
 
         string connectResponse(dataBuffer, 14);
         if (connectResponse == "INFO2 CONNECT/") {
@@ -74,7 +75,7 @@ SocketClss firstHandshakeHandler(string ownIP, double OwnVersion, vector<SocketC
 }
 int listenForIncomingConnection(SocketClss& socket, string ownIP, double OwnVersion, vector<SocketClss> &IPStr, vector<int> &MessageIDs)
 {   
-    // Unendliche Schleife, um mehrere Client-Verbindungen zu akzeptieren
+    // Unendliche Schleife, um mehrere Client-Verbinungen zu akzeptieren
     while (true)
     {
         // 6. recieve data

@@ -21,6 +21,9 @@ public:
     int sockfd;
     std::string ipAddress = "0.0.0.0";
 
+    int getSocket(){
+        return sockfd;
+    }
     // Socket erstellen und mit Adresse verbinden (f�r Clients)
     bool C_createAndConnect(const std::string& ipAddress, int port) {
         sockfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -115,7 +118,7 @@ public:
             strerror_s(buffer, sizeof(buffer), errno);
             std::cerr << "Fehler beim accept des Sockets: " << buffer << std::endl;
 #else
-            std::cerr << "Fehler beim accept des Sockets: " << strerror(errno) << std::endl;
+           // std::cerr << "Fehler beim accept des Sockets: " << strerror(errno) << std::endl;
 #endif
         }
         return acceptSocket; // Neues MySocket-Objekt f�r die Client-Verbindung zur�ckgeben
@@ -133,11 +136,15 @@ public:
 #endif
             return false;
         }
+        //DEBUG
+        std::cout << "data send: " << message << std::endl;
         return true;
     }
 
     // Daten empfangen
     int receiveData(char* buffer, int bufferSize) {
+        //DEBUG
+        std::cout << "data recieved: " << buffer << std::endl;
         return recv(sockfd, buffer, bufferSize, 0);
     }
 

@@ -26,7 +26,10 @@ using namespace std;
 static int listenForMessage(SocketClss socket, double version, string own_address, vector<SocketClss>& establishedConnections, vector<int>& usedMsgIDs) {
  
     cout << "listenForMessage started a process" << endl;
-    listenForIncomingConnection(socket, own_address, version, establishedConnections, usedMsgIDs);
+    while (true){
+        listenForIncomingConnection(socket, own_address, version, establishedConnections, usedMsgIDs);
+    }
+   
 
     return 0;
     
@@ -137,7 +140,6 @@ int main()
     //InitSocket = firstHandshakeHandler(own_address, version, establishedConnections, usedMsgIDs);
     
     thread t1(ListenForConnections, own_address, version, std::ref(establishedConnections), std::ref(usedMsgIDs));
-    thread t2(listenForMessage, InitSocket, version, own_address, std::ref(establishedConnections), std::ref(usedMsgIDs)); 
     thread t3(restOfProgramm,firstUsr, initServerIP, std::ref(establishedConnections));
 
     
@@ -145,7 +147,7 @@ int main()
     
 
     t1.join();
-    t2.join();
+    
     t3.join();
 
 
