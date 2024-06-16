@@ -40,7 +40,7 @@ int listenForIncomingConnection(SocketClss& socket, string ownIP, double OwnVers
         // 6. recieve data
         char dataBuffer[1024] = {0};
         int recieveData = socket.receiveData(dataBuffer, 1024);
-        if (recieveData > 0){
+        if (true){
             cout << "daten Erhalten" << dataBuffer << endl;
             continue;
         }

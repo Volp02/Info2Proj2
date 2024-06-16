@@ -29,7 +29,7 @@ int main()
 #ifdef _WIN32
     initWinsock();
 #endif
-
+    
     cout << "enter own IP (or only last 3 digits):" << endl;
 
     string addressStart = "192.168.178.";
@@ -64,19 +64,10 @@ int main()
     double version = 0.6;
 
     // listenForIncomingConnection, own_address, version, knownIPs, usedMsgIDs;
-    SocketClss ServerSocket;
-
+    
     // listenForIncomingConnection(std::ref(ServerSocket), own_address, version, std::ref(establishedConnections),std::ref(usedMsgIDs));
 
     // thread listening(listenForIncomingConnection(std::ref(ServerSocket), own_address, version, std::ref(establishedConnections),std::ref(usedMsgIDs)));
-    ServerSocket.S_createAndBind(PORT); // create and bind socket
-    ServerSocket.S_listen();            // listen for incoming connections
-
-
-    std::thread listening([&]()
-                          { listenForIncomingConnection(std::ref(ServerSocket), own_address, version,
-                                                        std::ref(establishedConnections), std::ref(usedMsgIDs)); });
-
 
     if (!firstUsr)
     {
@@ -85,9 +76,10 @@ int main()
         cout << "connecting to server :" << initServerIP << endl;
         FirstConnectSocket.C_createAndConnect(initServerIP, PORT); // connect to server
 
-        FirstConnectSocket.sendData("INFO2 CONNECT/" + std::to_string(version)); // send handshake
+        FirstConnectSocket.sendData("INFO2 CONNECT/0.6"); // send handshake
 
         char dataBuffer[1024] = {0};
+        cout << "recieving handshake response"<< endl;
         int recievedData = FirstConnectSocket.receiveData(dataBuffer, 1024); // receive handshake
 
         string connectResponse(dataBuffer);
@@ -107,6 +99,19 @@ int main()
             FirstConnectSocket.closeSocket();
         }
     }
+
+    SocketClss ServerSocket;
+
+    ServerSocket.S_createAndBind(PORT); // create and bind socket
+    ServerSocket.S_listen();            // listen for incoming connections
+
+    listenForIncomingConnection(ServerSocket, own_address, version, establishedConnections, usedMsgIDs);
+    //std::thread listening([&]()
+      //                    { listenForIncomingConnection(std::ref(ServerSocket), own_address, version,
+        //                                                std::ref(establishedConnections), std::ref(usedMsgIDs)); });
+    
+
+
 
     
 
@@ -137,7 +142,7 @@ int main()
         }
     }*/
 
-    listening.join();
+    //listening.join();
 
     return 0;
 }
