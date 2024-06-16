@@ -2,8 +2,10 @@
 
 #include <vector>
 #include <iostream>
+#include "socket.h"
 
-std::vector<std::string> storeIP(std::vector<std::string>& IPStr, const std::string IP);
-std::string giveIP(std::vector<std::string>& IPStr);
+std::vector<SocketClss> storeIP(std::vector<SocketClss> &IPStr, const SocketClss& IP);
+std::string giveIP(std::vector<SocketClss>& IPStr);
 bool checkMessageID(std::vector<int>& MessageID_Vector, int MessageID);
 int createMessageID();
+

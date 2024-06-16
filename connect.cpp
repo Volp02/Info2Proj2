@@ -65,7 +65,6 @@ SocketClss firstHandshake(string IP, int Port, double OwnVersion) {
     return SocketClss(); //Gibt eine neue und leere socket class zurück
 }
 
-
 // TO BE CHANGED TO USE CLASS: \/
 bool backConnectSend(string ownIP, string sendIP)
 {
@@ -151,40 +150,14 @@ string sendFriendRequest(std::string targetIP) {
     // 5. Verbindung schließen
     
 }
-bool sendMessage(std::string Message, int MessageID, std::vector<std::string> &knownClients) {
 
-    struct sockaddr_in serv_addr; // Struktur für die Server-Adresse
-    int clientIP_socket;            // Socket-Descriptor des Clients
+bool sendMessage(std::string Message, int MessageID, std::vector<SocketClss>& knownClients) {
 
-    // creat socket
-    if ((clientIP_socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == 0)
-    {
-        std::cout << "client socket setup failed" << std::endl;
-        return false;
-    }
-    serv_addr.sin_family = AF_INET;   // IPv4-Adressfamilie
-    serv_addr.sin_port = htons(PORT); // Portnummer in Netzwerk-Byte-Reihenfolge umwandeln
     for (int i = 0; i <= sizeof(knownClients); i++) {
 
-        if (inet_pton(AF_INET, knownClients[i].c_str(), &serv_addr.sin_addr) <= 0)
-        {
-            std::cerr << "sendMessage: Ungültige Adresse oder Adresse nicht unterstützt\n";
-            return false; // Beenden mit Fehlercode 1
-        }
-        // 3. Verbindung zum Server herstellen
-        if (connect(clientIP_socket, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) < 0)
-        {
-            //std::cerr << "Verbindungsfehler: " << strerror(errno) << std::endl;
-            std::cerr << "sendMessage: Verbindungsfehler\n Couldnt connect to Server " << knownClients[i] << endl;
-            return false; // Beenden mit Fehlercode 1
-        }
-        std::cout << "sendMessage: Verbunden zum Server " << knownClients[i] << endl;
-
-
         string message = "SEND  " + MessageID + ' ' + Message;
-
-        send(clientIP_socket, message.c_str(), message.length(), 0); // Senden der Nachricht an den Server
-        std::cout << "sendMessage: Nachricht gesendet: " << message << std::endl;
+        knownClients[i].sendData(message);
+        std::cout << "sendMessage: Nachricht an '" << knownClients[i].ipAddress << "' gesendet: " << message << std::endl;
 
     }
     return true;
@@ -218,7 +191,6 @@ bool sendMessageIDlessDEBUG(std::string Message, std::vector<std::string> &known
             return false; // Beenden mit Fehlercode 1
         }
         std::cout << "sendMessageDEBUG: Verbunden zum Server " << knownClients[i] << endl;
-
 
         string message = Message;
 

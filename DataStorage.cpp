@@ -8,13 +8,13 @@
 
 #include "connect.h"
 #include "listen.h"
-
+#include "socket.h"
 
 #define PORT 26000
 #define BUFFER_SIZE 1024
 
 
-std::vector<std::string> storeIP(std::vector<std::string> &IPStr, const std::string IP)
+std::vector<SocketClss> storeIP(std::vector<SocketClss> &IPStr, const SocketClss& IP)
 {
 	IPStr.push_back(IP);
 
@@ -48,7 +48,7 @@ bool checkMessageID(std::vector<int>& MessageID_Vector, int MessageID)
 
 
 
-std::string giveIP(std::vector<std::string>& IPStr)
+std::string giveIP(std::vector<SocketClss>& IPStr)
 {
 	static int count = 1;
 
@@ -59,13 +59,13 @@ std::string giveIP(std::vector<std::string>& IPStr)
 	}
 	if (IPStr.size() == 1)
 	{
-		return IPStr[0];
+		return IPStr[0].ipAddress;
 	}
 	else
 	{
 		if (IPStr.size() > count)
 		{
-			std::string output = IPStr[IPStr.size() - count];
+			std::string output = IPStr[IPStr.size() - count].ipAddress;
 			count++;
 			return output;
 		}

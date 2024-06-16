@@ -21,41 +21,42 @@ typedef int socklen_t;
 #define PORT 26000
 
 
-
 using std::cin;
 using std::cout;
 using std::endl;
 using std::string;
 using std::vector;
 
-SocketClss HandleFirstHandshake(int Port, double OwnVersion) {
+SocketClss HandleFirstHandshake(SocketClss originalSocket,int Port, double OwnVersion) {
+    if(!(originalSocket.sockfd >= 0)){
 
-    SocketClss serverSocket; // Erstelle ein MySocket-Objekt 
-    if (!serverSocket.S_createAndBind(Port)) {
-        std::cerr << "Fehler beim Erstellen oder Binden des Sockets!" << std::endl;
-        return SocketClss(); // Rückgabe eines leeren MySocket-Objekts im Fehlerfall
+        
+        if (!originalSocket.S_createAndBind(Port)) {
+            std::cerr << "Fehler beim Erstellen oder Binden des Sockets!" << std::endl;
+            return SocketClss(); // Rückgabe eines leeren MySocket-Objekts im Fehlerfall
+        }
+
+        if (!originalSocket.S_listen()) { // Auf Verbindungen warten
+            std::cerr << "Fehler beim 'listen': " << std::endl;
+            originalSocket.closeSocket();
+            return SocketClss();
+        }
     }
 
-    if (!serverSocket.S_listen()) { // Auf Verbindungen warten
-        std::cerr << "Fehler beim 'listen': " << std::endl;
-        serverSocket.closeSocket();
-        return SocketClss();
-    }
-
-    SocketClss clientSocket = serverSocket.S_acceptConnection();  // Verwende acceptConnection von MySocket
-    if (clientSocket.sockfd < 0) {
+    SocketClss acceptSocket = originalSocket.S_acceptConnection(); // Verwende acceptConnection von MySocket
+    if (acceptSocket.sockfd < 0) {
         std::cerr << "Fehler beim 'accept': " << std::endl;
-        serverSocket.closeSocket();
+        originalSocket.closeSocket();
         return SocketClss();
     }
 
     char dataBuffer[1024] = { 0 };
-    int receiveData = clientSocket.receiveData(dataBuffer, 1024);  // Verwende receiveData von MySocket
+    int receiveData = acceptSocket.receiveData(dataBuffer, 1024);  // Verwende receiveData von MySocket
 
     if (receiveData <= 0) {
         std::cerr << "Fehler beim Empfangen von Daten." << std::endl;
-        clientSocket.closeSocket();
-        serverSocket.closeSocket();
+        acceptSocket.closeSocket();
+        originalSocket.closeSocket();
         return SocketClss();
     }
 
@@ -73,11 +74,11 @@ SocketClss HandleFirstHandshake(int Port, double OwnVersion) {
             std::cout << "handshake successful\n";
             std::string acceptConnection = "INFO2 OK\n\n";
 
-            clientSocket.sendData(acceptConnection); // Verwende sendData von MySocket
+            acceptSocket.sendData(acceptConnection); // Verwende sendData von MySocket
             std::cout << "responds with INFO2 OK! " << std::endl;
 
-            serverSocket.closeSocket(); // Schließe den Server-Socket nach dem Handshake
-            return clientSocket; // Gib den Client-Socket zurück
+            acceptSocket.closeSocket(); // Schließe den Server-Socket nach dem Handshake
+            return acceptSocket;                            // Gib den Client-Socket zurück
         }
         else {
             std::cout << "handshake failed -> old version: " << clientVersion << endl;
@@ -85,11 +86,11 @@ SocketClss HandleFirstHandshake(int Port, double OwnVersion) {
         std::cout << "handshake failed\n";
     }
 
-    serverSocket.closeSocket(); // Schließe den Server-Socket nach dem Handshake
-    return clientSocket; // Gib den Client-Socket zurück
+    acceptSocket.closeSocket(); // Schließe den Server-Socket nach dem Handshake
+    return originalSocket; // Gib den Client-Socket zurück
 }
 
-int listenForIncomingConnection(SocketClss& socket, string ownIP, double OwnVersion, vector<string> &IPStr, vector<int> &MessageIDs)
+int listenForIncomingConnection(SocketClss& socket, string ownIP, double OwnVersion, vector<SocketClss> &IPStr, vector<int> &MessageIDs)
 {
 
     cout << "Warte auf Verbindungen..." << endl;
@@ -99,6 +100,7 @@ int listenForIncomingConnection(SocketClss& socket, string ownIP, double OwnVers
     {
         if (socket.sockfd == -1)
         {
+            cout<< "k" << endl;
             continue; // Zum nächsten Schleifendurchlauf springen
         }
         else
@@ -107,6 +109,14 @@ int listenForIncomingConnection(SocketClss& socket, string ownIP, double OwnVers
             // 6. recieve data
             char dataBuffer[1024] = {0};
             int recieveData = socket.receiveData(dataBuffer, 1024);
+            if (recieveData > 0){
+                cout << "daten Erhalten" << dataBuffer << endl;
+                continue;
+            }
+            {
+                /* code */
+            }
+            
 
             string BackconnectResponse (dataBuffer, 11);
             if (!(strcmp(BackconnectResponse.c_str(), "BACKCONNECT"))) {

@@ -11,50 +11,36 @@ typedef int socklen_t;
 #include <string>
 #include <thread>
 #include <vector>
+#include <sstream>
 
 #include "connect.h"
 #include "listen.h"
 #include "DataStorage.h"
 #include "socket.h"
 
-
 #define PORT 26000
 #define BUFFER_SIZE 1024
 
 using namespace std;
 
+int main()
+{
 
-static int waitForConnection(double version, string own_address, vector<string>& knownIPs, vector<int>& usedMsgIDs) {
-
-    SocketClss InitSocketIncoming;
-    while (true) {
-        InitSocketIncoming = HandleFirstHandshake(PORT, version);
-        if (InitSocketIncoming.sockfd >= 0) {
-            thread* lissteningThread = new thread([&]() {
-                listenForIncomingConnection(std::ref(InitSocketIncoming), own_address, version, std::ref(knownIPs), std::ref(usedMsgIDs));
-                });
-        }
-        else return 1;
-    }
-
-}
-
-int main() {
-
-    #ifdef _WIN32 
-        initWinsock();
-    #endif
+#ifdef _WIN32
+    initWinsock();
+#endif
 
     cout << "enter own IP (or only last 3 digits):" << endl;
-    
+
     string addressStart = "192.168.178.";
     string own_address;
-    std::vector<std::string> knownIPs;
+    std::vector<SocketClss> establishedConnections;
     std::vector<int> usedMsgIDs;
 
     getline(cin, own_address);
-    
-    if (size(own_address) <= 3) {
+
+    if (size(own_address) <= 3)
+    {
         own_address = addressStart + own_address;
         cout << "Address set to " << own_address << endl;
     }
@@ -65,22 +51,64 @@ int main() {
 
     getline(cin, initServerIP);
 
-    if (size(initServerIP) <= 3) {
+    if (size(initServerIP) <= 3)
+    {
         initServerIP = addressStart + initServerIP;
         cout << "Address set to " << initServerIP << endl;
     }
-    
+
     bool firstUsr;
     cout << "are you the first node? (1 / 0)";
     cin >> firstUsr;
-    
+
     double version = 0.6;
 
+    // listenForIncomingConnection, own_address, version, knownIPs, usedMsgIDs;
+    SocketClss ServerSocket;
 
-    //listenForIncomingConnection, own_address, version, knownIPs, usedMsgIDs;
+    // listenForIncomingConnection(std::ref(ServerSocket), own_address, version, std::ref(establishedConnections),std::ref(usedMsgIDs));
 
-    thread t1(waitForConnection,version,own_address, std::ref(knownIPs), std::ref(usedMsgIDs));
+    // thread listening(listenForIncomingConnection(std::ref(ServerSocket), own_address, version, std::ref(establishedConnections),std::ref(usedMsgIDs)));
+    ServerSocket.S_createAndBind(PORT); // create and bind socket
+
+    std::thread listening([&]()
+                          { listenForIncomingConnection(std::ref(ServerSocket), own_address, version,
+                                                        std::ref(establishedConnections), std::ref(usedMsgIDs)); });
+
+
+    if (!firstUsr)
+    {
+
+        SocketClss FirstConnectSocket;
+        cout << "connecting to server :" << initServerIP << endl;
+        FirstConnectSocket.C_createAndConnect(initServerIP, PORT); // connect to server
+
+        FirstConnectSocket.sendData("INFO2 CONNECT/" + std::to_string(version)); // send handshake
+
+        char dataBuffer[1024] = {0};
+        int recievedData = FirstConnectSocket.receiveData(dataBuffer, 1024); // receive handshake
+
+        string connectResponse(dataBuffer);
+
+        if (recievedData >= 0 && connectResponse == "INFO2 OK\n\n")
+        { // check handshake response
+            cout << "handshake successful\n"
+                 << endl;
+            storeIP(establishedConnections, FirstConnectSocket);       // store server IP
+            cout<<
+            FirstConnectSocket.sendData("BACKCONNECT " + own_address); // send backconnect
+            FirstConnectSocket.closeSocket();                          // close socket
+        }
+        else
+        {
+            cout << "handshake not successful, returning" << "connectResponse == INFO2 OK: " << (connectResponse == "INFO2 OK\n\n") << endl; // handshake not successful, close socket
+            FirstConnectSocket.closeSocket();
+        }
+    }
+
     
+
+    /*
     SocketClss InitSocket;
     InitSocket = firstHandshake(own_address, PORT, version);
 
@@ -91,7 +119,7 @@ int main() {
             cout << "connected to client " << knownClient << endl;
 
             InitSocket.sendData("BACKCONNECT " + own_address);
-            
+
             InitSocket.sendData("FRIEND REQUEST\n\n");
             char dataBuffer[128] = { 0 };
 
@@ -105,10 +133,9 @@ int main() {
             cout << "no connection established, acting as first Node!" << endl;
             storeIP(knownIPs, own_address);
         }
-    }
-    
+    }*/
 
-    t1.join(); 
- 
+    listening.join();
+
     return 0;
 }
