@@ -27,6 +27,8 @@ static int listenForMessage(SocketClss socket, double version, string own_addres
  
     cout << "listenForMessage started a process" << endl;
     listenForIncomingConnection(socket, own_address, version, establishedConnections, usedMsgIDs);
+
+    return 0;
     
 }
 
@@ -48,6 +50,7 @@ static int ListenForConnections(string ownIP, double version, vector<SocketClss>
 
         }
     }
+    return 0;
     
 }
 
@@ -83,6 +86,7 @@ int restOfProgramm(bool firstUsr, string initServerIP, vector<SocketClss>& estab
             FirstConnectSocket.closeSocket();
         }
     }
+    return 0;
 }
 
 
