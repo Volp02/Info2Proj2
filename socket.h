@@ -17,8 +17,11 @@ typedef int socklen_t;
 class SocketClss {
 public:
     SocketClss() : sockfd(-1) {}
-
+#ifdef _WIN32
+    SOCKET sockfd;
+#else
     int sockfd;
+#endif
     std::string ipAddress = "0.0.0.0";
 
     int getSocket(){
@@ -144,7 +147,7 @@ public:
     // Daten empfangen
     int receiveData(char* buffer, int bufferSize) {
         //DEBUG
-        std::cout << "data recieved: " << buffer << std::endl;
+        //std::cout << "data recieved: " << buffer << std::endl;
         return recv(sockfd, buffer, bufferSize, 0);
     }
 
@@ -152,6 +155,7 @@ public:
     void closeSocket() {
         if (sockfd >= 0) { // Nur schlie�en, wenn der Socket g�ltig ist
 
+            std::cout<< "Closing socket..." << sockfd <<std::endl;
             closesocket(sockfd);
 
             sockfd = -1; // Socket-Deskriptor auf ung�ltig setzen
