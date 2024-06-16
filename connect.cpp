@@ -16,15 +16,19 @@ typedef int socklen_t;
 using namespace std;
 
 
-SocketClss firstHandshake(string IP, int Port, double OwnVersion) {
+SocketClss firstHandshake(SocketClss serverSocket, std::string IP, int Port, double OwnVersion) {
 
-    SocketClss serverSocket; // Erstelle ein MySocket-Objekt 
-    if (!serverSocket.C_createAndConnect(IP, Port)) {
-        std::cerr << "Fehler beim Erstellen oder Binden des Sockets!" << std::endl;
-        return SocketClss(); // Rückgabe eines leeren MySocket-Objekts im Fehlerfall
+    if(serverSocket.sockfd == -1) {
+        SocketClss serverSocket; // Erstelle ein MySocket-Objekt 
+        if (!serverSocket.C_createAndConnect(IP, Port)) {
+            std::cerr << "Fehler beim Erstellen oder Binden des Sockets!" << std::endl;
+            return SocketClss(); // Rückgabe eines leeren MySocket-Objekts im Fehlerfall
+        }
     }
 
-    serverSocket.sendData("INFO2 CONNECT/" + std::to_string(OwnVersion));
+    
+
+    serverSocket.sendData("INFO2 CONNECT/" + std::to_string(OwnVersion)+"\n\n");
 
     char dataBuffer[1024] = { 0 };
     int receiveData = serverSocket.receiveData(dataBuffer, 1024);

@@ -116,6 +116,8 @@ int main()
 
         string connectResponse(dataBuffer);
 
+        cout << "Data buffer: " << connectResponse << endl;
+
         if (!(recievedData >= 0 && connectResponse == "INFO2 OK\n\n"))
         {                                                                                                                                    // check handshake response
             cout << "handshake not successful, returning" << "connectResponse == INFO2 OK: " << (connectResponse == "INFO2 OK\n\n") << endl; // handshake not successful, close socket
@@ -123,7 +125,7 @@ int main()
 
             
         }
-         cout << "handshake successful\n" << endl;
+         //cout << "handshake successful\n" << endl;
 
         storeIP(establishedConnections, FirstConnectSocket); // store server IP
     }

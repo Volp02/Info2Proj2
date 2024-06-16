@@ -126,7 +126,7 @@ int listenForIncomingConnection(SocketClss &socket, string ownIP, double OwnVers
                 cout << "receved backConnection attempt" << endl;
                 string responseIP(dataBuffer + 12);
                 cout << responseIP;
-                firstHandshake(responseIP, PORT, OwnVersion);
+                firstHandshake(socket,responseIP, PORT, OwnVersion);
             }
 
             string FriendRqResponse(dataBuffer, 18);
