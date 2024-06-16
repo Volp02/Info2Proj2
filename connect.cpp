@@ -62,9 +62,11 @@ SocketClss firstHandshake(string IP, int Port, double OwnVersion) {
     }
 
     serverSocket.closeSocket(); // Schließe den Server-Socket nach dem Handshake
-    return SocketClss(); //Gib den leere socket class zurück
+    return SocketClss(); //Gibt eine neue und leere socket class zurück
 }
 
+
+// TO BE CHANGED TO USE CLASS: \/
 bool backConnectSend(string ownIP, string sendIP)
 {
     struct sockaddr_in serv_addr; // Struktur für die Server-Adresse

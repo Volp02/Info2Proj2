@@ -30,7 +30,9 @@ static int waitForConnection(double version, string own_address, vector<string>&
     while (true) {
         InitSocketIncoming = HandleFirstHandshake(PORT, version);
         if (InitSocketIncoming.sockfd >= 0) {
-            thread* lissteningThread = new thread(listenForIncomingConnection(std::ref(InitSocketIncoming), own_address, version, std::ref(knownIPs), std::ref(usedMsgIDs)));
+            thread* lissteningThread = new thread([&]() {
+                listenForIncomingConnection(std::ref(InitSocketIncoming), own_address, version, std::ref(knownIPs), std::ref(usedMsgIDs));
+                });
         }
     }
 
@@ -105,17 +107,7 @@ int main() {
     }
     
 
-    //thread t2(listenForIncomingConnection, own_address, version, std::ref(knownIPs), std::ref(usedMsgIDs)); // thread #2
-
-    //sendMessageIDlessDEBUG("FRIENDREQUEST", knownIPs);
-    //sendMessageIDlessDEBUG("SEND 123456 This is an example message", knownIPs);
-
-
     t1.join(); 
  
     return 0;
-
-    //listenForIncomingConnection(own_address);
-    //FirstTimeconnect("192.168.178.163", version); 
-
 }
