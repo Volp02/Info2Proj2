@@ -29,6 +29,9 @@ SocketClss firstHandshakeHandler(string ownIP, double OwnVersion)
     cout << "--- im thread firstHandshakeHandler" << endl;
     SocketClss ServerSocket;
     ServerSocket.S_createAndBind(PORT); // create and bind socke
+    
+    //DEBUG
+    cout<<"serverSocket created and bound" << endl;
 
     ServerSocket.S_listen(PORT);
     cout << "Warte auf Verbindungen..." << endl;
@@ -74,7 +77,7 @@ SocketClss firstHandshakeHandler(string ownIP, double OwnVersion)
             }
         }
 
-        ServerSocket.S_listen(PORT);
+        //ServerSocket.S_listen(PORT);
     }
 }
 int listenForIncomingConnection(SocketClss &socket, string ownIP, double OwnVersion, vector<SocketClss> &IPStr, vector<int> &MessageIDs)
