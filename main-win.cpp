@@ -109,7 +109,7 @@ int main()
     //thread t1([&]() { listenForIncomingConnection(InitSocket, own_address, version, std::ref(establishedConnections), std::ref(usedMsgIDs));});
     // Detach the thread to run independently
     //listeningThread.join();
-    return 100;    
+    //return 100;    
 
     while(true){
         listenForIncomingConnection(InitSocket, own_address, version, establishedConnections, usedMsgIDs);
