@@ -26,36 +26,15 @@ using namespace std;
 static int listenForMessage(SocketClss socket, double version, string own_address, vector<SocketClss>& establishedConnections, vector<int>& usedMsgIDs) {
  
     cout << "listenForMessage started a process" << endl;
-    while (true){
-        listenForIncomingConnection(socket, own_address, version, establishedConnections, usedMsgIDs);
-    }
+    
+    listenForIncomingConnection(socket, own_address, version, establishedConnections, usedMsgIDs);
+    
    
 
     return 0;
     
 }
 
-static int ListenForConnections(string ownIP, double version, vector<SocketClss>& establishedConnections, vector<int>& usedMsgIDs){
-    cout << "ListenForConnections started a process" << endl;
-    while(true){
-        
-        SocketClss NewClient;
-
-        NewClient = firstHandshakeHandler(ownIP, version, establishedConnections, usedMsgIDs);
-
-        if (NewClient.sockfd >= 0)
-        {
-            storeIP(establishedConnections, NewClient);
-            std::thread* clientThread = new std::thread([&NewClient, ownIP, version, &establishedConnections, &usedMsgIDs]() {
-                listenForIncomingConnection(NewClient, ownIP, version, std::ref(establishedConnections), std::ref(usedMsgIDs));
-                cout << "ListenForIncomingConnection started a Subprocess" << endl;
-            });
-
-        }
-    }
-    return 0;
-    
-}
 
 
 
@@ -137,18 +116,48 @@ int main()
 
     SocketClss InitSocket;
 
+
+    storeIP(establishedConnections, firstHandshakeHandler(own_address, version, establishedConnections, usedMsgIDs));
+    
+    cout << "Handled firsttimeconnect" << endl;
+    
+    listenForIncomingConnection(establishedConnections[0],own_address, version, establishedConnections, usedMsgIDs);
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     //InitSocket = firstHandshakeHandler(own_address, version, establishedConnections, usedMsgIDs);
     
-    thread t1(ListenForConnections, own_address, version, std::ref(establishedConnections), std::ref(usedMsgIDs));
-    thread t3(restOfProgramm,firstUsr, initServerIP, std::ref(establishedConnections));
+    //thread t1(ListenForConnections, own_address, version, std::ref(establishedConnections), std::ref(usedMsgIDs));
+    //thread t3(restOfProgramm,firstUsr, initServerIP, std::ref(establishedConnections));
+
+    //ListenForConnections(own_address, version, std::ref(establishedConnections), std::ref(usedMsgIDs));
+    //restOfProgramm(firstUsr, initServerIP, std::ref(establishedConnections));
+
+
+    //t2.join()
 
     
 
+    //t1.join();
     
-
-    t1.join();
-    
-    t3.join();
+    //t3.join();
 
 
 
