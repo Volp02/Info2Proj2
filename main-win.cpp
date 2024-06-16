@@ -27,6 +27,7 @@ int listenForIncomingMessages(vector<SocketClss> &establishedConnections, vector
 
 int listenForIncomingConnectionsThread(vector<SocketClss> &establishedConnections, vector<int> &usedMsgIDs, string ownIP, double OwnVersion)
 {
+    std::cout << "--- im function listenForIncomingConnectionsThread ---" << std::endl;
     while (true)
     {
         if (storeIP(establishedConnections, firstHandshakeHandler(ownIP, OwnVersion)))
@@ -37,6 +38,7 @@ int listenForIncomingConnectionsThread(vector<SocketClss> &establishedConnection
 
 int listenForIncomingMessages(vector<SocketClss> &establishedConnections, vector<int> &usedMsgIDs, string ownIP, double OwnVersion)
 {
+    std::cout << "--- im function listenForIncomingMessages ---" << std::endl;
     int ipCount = countIPs(establishedConnections) - 1;
 
     std::thread* listening = new std::thread([&]() {
@@ -51,7 +53,7 @@ int listenForIncomingMessages(vector<SocketClss> &establishedConnections, vector
 
 static int listenForMessage(SocketClss socket, double version, string own_address, vector<SocketClss> &establishedConnections, vector<int> &usedMsgIDs)
 {
-
+    std::cout << "--- im function listenForMessage ---" << std::endl;
     cout << "listenForMessage started a process" << endl;
 
     listenForIncomingConnection(socket, own_address, version, establishedConnections, usedMsgIDs);
