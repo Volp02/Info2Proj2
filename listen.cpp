@@ -35,7 +35,7 @@ SocketClss firstHandshakeHandler(string ownIP, double OwnVersion, vector<SocketC
     cout << "Warte auf Verbindungen..." << endl;
 
     // Unendliche Schleife, um mehrere Client-Verbindungen zu akzeptieren
-    for (int i = 0; i < 10; i++)
+    while (true)
     {
 
         SocketClss acceptSocket = ServerSocket.S_acceptConnection();
@@ -74,6 +74,8 @@ SocketClss firstHandshakeHandler(string ownIP, double OwnVersion, vector<SocketC
                 }
             }
         }
+
+        ServerSocket.S_listen(PORT);
     }
 }
 int listenForIncomingConnection(SocketClss &socket, string ownIP, double OwnVersion, vector<SocketClss> &IPStr, vector<int> &MessageIDs)
@@ -88,7 +90,7 @@ int listenForIncomingConnection(SocketClss &socket, string ownIP, double OwnVers
         string connectResponse(dataBuffer);
         cout << "dataBuffer string " << connectResponse << endl;
 
-        if (recievedData >= 0)
+        if (recievedData > 0)
         { // check handshake response
 
             string connectResponse(dataBuffer, 14);
@@ -154,6 +156,7 @@ int listenForIncomingConnection(SocketClss &socket, string ownIP, double OwnVers
                 }
             }
         }
+        else break;
 
         // cout << "whiling";
 

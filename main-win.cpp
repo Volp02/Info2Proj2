@@ -29,8 +29,6 @@ static int listenForMessage(SocketClss socket, double version, string own_addres
     
     listenForIncomingConnection(socket, own_address, version, establishedConnections, usedMsgIDs);
     
-   
-
     return 0;
     
 }
@@ -113,7 +111,8 @@ int main()
     double version = 0.6;
 
 
-
+    restOfProgramm(firstUsr, initServerIP, establishedConnections);
+    
     SocketClss InitSocket;
 
 
