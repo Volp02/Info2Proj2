@@ -31,25 +31,34 @@ int listenForIncomingConnectionsThread(vector<SocketClss> &establishedConnection
     while (true)
     {
         if (storeIP(establishedConnections, firstHandshakeHandler(ownIP, OwnVersion)))
-
-        listenForIncomingMessages(establishedConnections, usedMsgIDs, ownIP, OwnVersion);
+            ;
     }
 }
 
 int listenForIncomingMessages(vector<SocketClss> &establishedConnections, vector<int> &usedMsgIDs, string ownIP, double OwnVersion)
 {
-    std::cout << "--- im function listenForIncomingMessages ---" << std::endl;
-    int ipCount = countIPs(establishedConnections) - 1;
+    int sizeTmp = countIPs(establishedConnections) - 1;
+    while (true)
+    {
+        if (sizeTmp < countIPs(establishedConnections) - 1)
+        {
+            sizeTmp = countIPs(establishedConnections) - 1;
+            // Dereference the pointer returned by countIPs
+            if (countIPs(establishedConnections) > 0)
+            {
+                std::cout << "--- im function listenForIncomingMessages ---" << std::endl;
 
-    std::thread* listening = new std::thread([&]() {
-    listenForIncomingConnection(std::ref(establishedConnections[ipCount]), ownIP, OwnVersion, 
-                                std::ref(establishedConnections), std::ref(usedMsgIDs));
-});
+                std::thread *listening = new std::thread([&]()
+                                                         { listenForIncomingConnection(std::ref(establishedConnections[sizeTmp]), ownIP, OwnVersion,
+                                                                                       std::ref(establishedConnections), std::ref(usedMsgIDs)); });
+                listening->join();
+            }
+        }
 
-
-    listening->join();
+    }
     return 0;
 }
+
 
 static int listenForMessage(SocketClss socket, double version, string own_address, vector<SocketClss> &establishedConnections, vector<int> &usedMsgIDs)
 {
@@ -70,8 +79,10 @@ int main()
 
     cout << "enter own IP (or only last 3 digits):" << endl;
 
-    string addressStart = "192.168.178.";
-    string own_address;
+    std::string addressStart;
+    addressStart = "192.168.178.";
+
+    std::string own_address;
     std::vector<SocketClss> establishedConnections;
     std::vector<int> usedMsgIDs;
 
@@ -106,7 +117,6 @@ int main()
     {
         cout << "restOfProgramm started a process" << endl;
 
-        
         cout << "connecting to server :" << initServerIP << endl;
         FirstConnectSocket.C_createAndConnect(initServerIP, PORT); // connect to server
 
@@ -124,35 +134,31 @@ int main()
         {                                                                                                                                    // check handshake response
             cout << "handshake not successful, returning" << "connectResponse == INFO2 OK: " << (connectResponse == "INFO2 OK\n\n") << endl; // handshake not successful, close socket
             FirstConnectSocket.closeSocket();
-
-            
         }
-         //cout << "handshake successful\n" << endl;
+        // cout << "handshake successful\n" << endl;
 
         storeIP(establishedConnections, FirstConnectSocket); // store server IP
     }
 
-    try{
+    try
+    {
 
-        
-        //thread t1(listenForMessage, FirstConnectSocket, version, own_address, establishedConnections, usedMsgIDs);
-
+        // thread t1(listenForMessage, FirstConnectSocket, version, own_address, establishedConnections, usedMsgIDs);
     }
     catch (const char *e)
     {
         cout << e << endl;
     }
-        
 
     SocketClss InitSocket;
 
     thread t2(listenForIncomingConnectionsThread, std::ref(establishedConnections), std::ref(usedMsgIDs), own_address, version);
+    thread t3(listenForIncomingMessages, std::ref(establishedConnections), std::ref(usedMsgIDs), own_address, version);
 
     cout << "Handled firsttimeconnect" << endl;
 
-
-    //t1.join();
-    //t2.join();
+    // t1.join();
+    // t2.join();
 
     // InitSocket = firstHandshakeHandler(own_address, version, establishedConnections, usedMsgIDs);
 
@@ -162,9 +168,11 @@ int main()
     // ListenForConnections(own_address, version, std::ref(establishedConnections), std::ref(usedMsgIDs));
     // restOfProgramm(firstUsr, initServerIP, std::ref(establishedConnections));
 
-     t2.join();
+    t2.join();
+    t3.join();
 
-     //t1.join();
+
+    // t1.join();
 
     // t3.join();
 
