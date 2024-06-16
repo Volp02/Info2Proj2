@@ -155,7 +155,7 @@ public:
     void closeSocket() {
         if (sockfd >= 0) { // Nur schlie�en, wenn der Socket g�ltig ist
 
-            cout<< "Closing socket..." << sockfd <<endl;
+            std::cout<< "Closing socket..." << sockfd <<std::endl;
             closesocket(sockfd);
 
             sockfd = -1; // Socket-Deskriptor auf ung�ltig setzen
