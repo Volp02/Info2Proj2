@@ -122,7 +122,10 @@ int main()
     
     listenForIncomingConnection(establishedConnections[0],own_address, version, establishedConnections, usedMsgIDs);
 
-    sendMessage("test", get)
+    sendMessage("test", createMessageID(usedMsgIDs), establishedConnections);
+
+    thread t2(listenForMessage, InitSocket, version, own_address, std::ref(establishedConnections), std::ref(usedMsgIDs));
+
 
 
 
