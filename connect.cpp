@@ -71,6 +71,7 @@ SocketClss firstHandshake(SocketClss serverSocket, std::string IP, int Port, dou
     return SocketClss(); //Gibt eine neue und leere socket class zurück
 }
 
+
 // TO BE CHANGED TO USE CLASS: \/
 bool backConnectSend(SocketClss socket, string ownIP, string sendIP)
 {

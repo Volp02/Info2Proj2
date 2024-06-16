@@ -144,7 +144,7 @@ public:
     // Daten empfangen
     int receiveData(char* buffer, int bufferSize) {
         //DEBUG
-        std::cout << "data recieved: " << buffer << std::endl;
+        //std::cout << "data recieved: " << buffer << std::endl;
         return recv(sockfd, buffer, bufferSize, 0);
     }
 
@@ -152,6 +152,7 @@ public:
     void closeSocket() {
         if (sockfd >= 0) { // Nur schlie�en, wenn der Socket g�ltig ist
 
+            cout<< "Closing socket..." << sockfd <<endl;
             closesocket(sockfd);
 
             sockfd = -1; // Socket-Deskriptor auf ung�ltig setzen
