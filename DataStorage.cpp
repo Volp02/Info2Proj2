@@ -28,11 +28,17 @@ bool storeMessageID(std::vector<int> &MessageID_Vector, int MessageID)
 	
 }
 
-int createMessageID()
+int createMessageID(std::vector<int> &MessageID_Vector)
 {
-	srand(time(NULL));
-
-	return rand() % 999999;
+	int msgID;
+	do
+	{
+		srand(time(NULL));
+		msgID = rand() % 999999;
+	}while (!checkMessageID(MessageID_Vector, msgID));
+	
+	storeMessageID(MessageID_Vector, msgID);
+	return msgID;
 }
 
 bool checkMessageID(std::vector<int>& MessageID_Vector, int MessageID)

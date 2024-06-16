@@ -112,7 +112,7 @@ int main()
 
 
     restOfProgramm(firstUsr, initServerIP, establishedConnections);
-    
+
     SocketClss InitSocket;
 
 
@@ -122,7 +122,7 @@ int main()
     
     listenForIncomingConnection(establishedConnections[0],own_address, version, establishedConnections, usedMsgIDs);
 
-    
+    sendMessage("test", get)
 
 
 
