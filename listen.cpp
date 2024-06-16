@@ -45,9 +45,6 @@ int listenForIncomingConnection(SocketClss& socket, string ownIP, double OwnVers
         char dataBuffer[1024] = {0};
         int recieveData = socket.receiveData(dataBuffer, 1024);
 
-        {
-            /* code */
-        }
         string connectResponse(dataBuffer, 14);
         if (connectResponse == "INFO2 CONNECT/") {
 

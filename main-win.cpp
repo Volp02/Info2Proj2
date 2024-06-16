@@ -103,21 +103,19 @@ int main()
     }
 
     SocketClss InitSocket;
-    
-    //thread t1(listenForIncomingConnection, InitSocket, version, own_address, std::ref(establishedConnections), std::ref(usedMsgIDs));
 
-    thread t1([&]() {
-    listenForIncomingConnection(InitSocket, own_address, version, std::ref(establishedConnections), std::ref(usedMsgIDs));
-    });
+
+
+    //thread t1([&]() { listenForIncomingConnection(InitSocket, own_address, version, std::ref(establishedConnections), std::ref(usedMsgIDs));});
     // Detach the thread to run independently
     //listeningThread.join();
     return 100;    
 
     while(true){
-        
+        listenForIncomingConnection(InitSocket, own_address, version, establishedConnections, usedMsgIDs);
     }
 
-    t1.join();
+    //t1.join();
 
     //listenForIncomingConnection(ServerSocket, own_address, version, establishedConnections, usedMsgIDs);
     //std::thread listening([&]()
