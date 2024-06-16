@@ -89,7 +89,7 @@ SocketClss HandleFirstHandshake(int Port, double OwnVersion) {
     return clientSocket; // Gib den Client-Socket zurück
 }
 
-int listenForIncomingConnection(static SocketClss& socket, string ownIP, double OwnVersion, vector<string> &IPStr, vector<int> &MessageIDs)
+int listenForIncomingConnection(SocketClss& socket, string ownIP, double OwnVersion, vector<string> &IPStr, vector<int> &MessageIDs)
 {
 
     cout << "Warte auf Verbindungen..." << endl;

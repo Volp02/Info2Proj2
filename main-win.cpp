@@ -34,6 +34,7 @@ static int waitForConnection(double version, string own_address, vector<string>&
                 listenForIncomingConnection(std::ref(InitSocketIncoming), own_address, version, std::ref(knownIPs), std::ref(usedMsgIDs));
                 });
         }
+        else return 1;
     }
 
 }
