@@ -70,7 +70,7 @@ int main() {
     }
     
     bool firstUsr;
-    cout << "are you the first node? (1 / 0)";
+    cout << "are you the first node? (1 / 0): ";
     cin >> firstUsr;
     
     double version = 0.6;
