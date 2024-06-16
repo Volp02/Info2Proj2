@@ -27,23 +27,22 @@ using std::endl;
 using std::string;
 using std::vector;
 
+SocketClss firstHandshakeHandler(string ownIP, double OwnVersion, vector<SocketClss> &IPStr, vector<int> &MessageIDs){
 
-int listenForIncomingConnection(SocketClss& socket, string ownIP, double OwnVersion, vector<SocketClss> &IPStr, vector<int> &MessageIDs)
-{   
-    
-    socket.S_createAndBind(PORT); // create and bind socke
+    SocketClss ServerSocket;
+    ServerSocket.S_createAndBind(PORT); // create and bind socke
     cout << "bind done! ----"; 
 
-    socket.S_listen(PORT);
+    ServerSocket.S_listen(PORT);
     cout << "Warte auf Verbindungen..." << endl;
     
     // Unendliche Schleife, um mehrere Client-Verbindungen zu akzeptieren
     while (true)
     {
-        SocketClss acceptSocket = socket.S_acceptConnection();
+        SocketClss acceptSocket = ServerSocket.S_acceptConnection();
         // 6. recieve data
         char dataBuffer[1024] = {0};
-        int recieveData = socket.receiveData(dataBuffer, 1024);
+        int recieveData = ServerSocket.receiveData(dataBuffer, 1024);
 
         string connectResponse(dataBuffer, 14);
         if (connectResponse == "INFO2 CONNECT/") {
@@ -62,8 +61,46 @@ int listenForIncomingConnection(SocketClss& socket, string ownIP, double OwnVers
                 acceptSocket.sendData(acceptConnection); // Verwende sendData von MySocket
                 std::cout << "responds with INFO2 OK! " << std::endl;
 
+                return acceptSocket;
+
+            }
+            else {
+                std::cout << "handshake failed -> old version: " << clientVersion << endl;
+            }
+        }
+    }
+
+
+}
+int listenForIncomingConnection(SocketClss& socket, string ownIP, double OwnVersion, vector<SocketClss> &IPStr, vector<int> &MessageIDs)
+{   
+    // Unendliche Schleife, um mehrere Client-Verbindungen zu akzeptieren
+    while (true)
+    {
+        // 6. recieve data
+        char dataBuffer[1024] = {0};
+        int recieveData = socket.receiveData(dataBuffer, 1024);
+
+        string connectResponse(dataBuffer, 14);
+        if (connectResponse == "INFO2 CONNECT/") {
+
+            std::cout << "received Connection attempt" << std::endl;
+            std::stringstream ss2;
+            std::string responseVers(dataBuffer + 14);
+            ss2 << responseVers;
+            double clientVersion;
+            ss2 >> clientVersion;
+
+            if (clientVersion >= OwnVersion) {
+                std::cout << "handshake successful\n";
+                std::string acceptConnection = "INFO2 OK\n\n";
+
+                socket.sendData(acceptConnection); // Verwende sendData von MySocket
+                std::cout << "responds with INFO2 OK! " << std::endl;
+
                 //acceptSocket.closeSocket(); // Schließe den Server-Socket nach dem Handshake
                                                 // Gib den Client-Socket zurück
+
             }
             else {
                 std::cout << "handshake failed -> old version: " << clientVersion << endl;
@@ -103,9 +140,9 @@ int listenForIncomingConnection(SocketClss& socket, string ownIP, double OwnVers
             
         }
 
-        acceptSocket.closeSocket();
+        
 
-        cout << "whiling";
+        //cout << "whiling";
         
     } // Ende der Schleife
 
