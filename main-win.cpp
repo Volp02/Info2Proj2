@@ -70,6 +70,8 @@ int main()
 
     // thread listening(listenForIncomingConnection(std::ref(ServerSocket), own_address, version, std::ref(establishedConnections),std::ref(usedMsgIDs)));
     ServerSocket.S_createAndBind(PORT); // create and bind socket
+    ServerSocket.S_listen();            // listen for incoming connections
+
 
     std::thread listening([&]()
                           { listenForIncomingConnection(std::ref(ServerSocket), own_address, version,
