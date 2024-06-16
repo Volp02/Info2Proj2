@@ -94,17 +94,8 @@ public:
     }
 
     // Auf eingehende Verbindungen warten (nur f�r Server)
-    bool S_listen(int backlog = 10) {
-        if (::listen(sockfd, backlog) < 0) { // backlog: Anzahl der wartenden Verbindungen
-#ifdef _WIN32
-            char buffer[256]; // Angemessene Puffergr��e
-            strerror_s(buffer, sizeof(buffer), errno);
-            std::cerr << "Fehler beim listening des Sockets: " << buffer << std::endl;
-#else
-            std::cerr << "Fehler beim listening des Sockets: " << strerror(errno) << std::endl;
-#endif
-            return false;
-        }
+    bool S_listen(int backlog = 2) {
+        listen(sockfd, backlog);
         return true;
     }
 

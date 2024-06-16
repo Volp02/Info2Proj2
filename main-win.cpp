@@ -105,10 +105,40 @@ int main()
         initServerIP = addressStart + initServerIP;
         cout << "Address set to " << initServerIP << endl;
     }
-
+    
     bool firstUsr;
-    cout << "are you the first node? (1 / 0)";
-    cin >> firstUsr;
+
+    char input;
+
+    std::cout << "    ..........................................................\n";
+    std::cout << "    .                                                        .\n";
+    std::cout << "    .      INFO2 PROJECT from Lajos, Matthias, Andi          .\n";
+    std::cout << "    .                                                        .\n";
+    std::cout << "    .      hit [j] to join an existing P2P Network!          .\n";
+    std::cout << "    .      hit [i] to create a new P2P Network!              .\n";
+    std::cout << "    .                                                        .\n";
+    std::cout << "    ..........................................................\n\n";
+    std::cout << "Eingabe: ";
+
+    std::cin >> input;
+    Input:
+    if (input == 'j')
+    {
+        firstUsr = 0;
+    }
+    else if (input == 'i')
+    {
+
+        firstUsr = 1;
+    }
+    else
+    {
+        std::cout << "Bitte nur j oder i eingeben! " << std::endl;
+        goto Input;
+    }
+
+
+
 
     double version = 0.6;
     SocketClss FirstConnectSocket;
@@ -155,6 +185,48 @@ int main()
     thread t2(listenForIncomingConnectionsThread, std::ref(establishedConnections), std::ref(usedMsgIDs), own_address, version);
     thread t3(listenForIncomingMessages, std::ref(establishedConnections), std::ref(usedMsgIDs), own_address, version);
 
+    while (true) {
+        std::cout << "    ..........................................................\n";
+        std::cout << "    .                                                        .\n";
+        std::cout << "    .      Wählen Sie eine Aktion!                           .\n";
+        std::cout << "    .                                                        .\n";
+        std::cout << "    .      hit [m] to write in the chat!                     .\n";
+        std::cout << "    .      hit [s] to show who's connected!                  .\n";
+        std::cout << "    .      hit [l] to leave the chat!                        .\n";
+        std::cout << "    .                                                        .\n";
+        std::cout << "    ..........................................................\n\n";
+
+
+        std::cout << "Eingabe: ";
+
+    Inputt:
+        std::cin >> input;
+
+        if (input == 'm')
+        {
+            std::string message;
+            char buffer[1024] = "";
+            std::cout << "Geben Sie eine Nachricht ein: ";
+            std::getline(std::cin >> std::ws, message);
+
+            sendMessageToClients(message, createMessageID(usedMsgIDs), establishedConnections);
+        }
+        else if (input == 's')
+        {
+
+            //code
+        }
+        else if (input == 'l')
+        {
+            //
+        }
+
+        else
+        {
+            std::cout << "Bitte nur m, s oder l eingeben! " << std::endl;
+            goto Inputt;
+        }
+    }
     cout << "Handled firsttimeconnect" << endl;
 
     // t1.join();

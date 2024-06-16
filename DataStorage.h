@@ -12,3 +12,4 @@ bool storeMessageID(std::vector<int> &MessageID_Vector, int MessageID);
 int countIPs(std::vector<SocketClss> &IPStr);
 
 void UI_Startup();
+void sendMessage();

@@ -107,7 +107,7 @@ string sendFriendRequest(SocketClss socket, std::string targetIP) {
     
 }
 
-bool sendMessage(std::string Message, int MessageID, std::vector<SocketClss>& knownClients) {
+bool sendMessageToClients(std::string Message, int MessageID, std::vector<SocketClss>& knownClients) {
 
     cout << "--- im function sendMessage ---" << endl;
     for (int i = 0; i <= sizeof(knownClients); i++) {
