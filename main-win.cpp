@@ -15,13 +15,26 @@ typedef int socklen_t;
 #include "connect.h"
 #include "listen.h"
 #include "DataStorage.h"
+#include "socket.h"
 
 
 #define PORT 26000
 #define BUFFER_SIZE 1024
 
-
 using namespace std;
+
+
+static int waitForConnection(double version, string own_address, vector<string>& knownIPs, vector<int>& usedMsgIDs) {
+
+    SocketClss InitSocketIncoming;
+    while (true) {
+        InitSocketIncoming = HandleFirstHandshake(PORT, version);
+        if (InitSocketIncoming.sockfd >= 0) {
+            thread* lissteningThread = new thread(listenForIncomingConnection(std::ref(InitSocketIncoming), own_address, version, std::ref(knownIPs), std::ref(usedMsgIDs)));
+        }
+    }
+
+}
 
 int main() {
 
@@ -45,13 +58,13 @@ int main() {
 
     cout << "enter initial Servent IP (or only last 3 digits):" << endl;
 
-    string initServer;
+    string initServerIP;
 
-    getline(cin, initServer);
+    getline(cin, initServerIP);
 
-    if (size(initServer) <= 3) {
-        initServer = addressStart + initServer;
-        cout << "Address set to " << initServer << endl;
+    if (size(initServerIP) <= 3) {
+        initServerIP = addressStart + initServerIP;
+        cout << "Address set to " << initServerIP << endl;
     }
     
     bool firstUsr;
@@ -63,15 +76,26 @@ int main() {
 
     //listenForIncomingConnection, own_address, version, knownIPs, usedMsgIDs;
 
+    thread t1(waitForConnection,version,own_address, std::ref(knownIPs), std::ref(usedMsgIDs));
+    
+    SocketClss InitSocket;
+    InitSocket = firstHandshake(own_address, PORT, version);
 
     if (!firstUsr) {
-        if (FirstTimeconnect(initServer, version)) {
+        if (InitSocket.sockfd >= 0) {
 
-            string knownClient = initServer;
+            string knownClient = initServerIP;
             cout << "connected to client " << knownClient << endl;
 
-            backConnectSend(own_address, initServer);
-            FirstTimeconnect(sendFriendRequest(initServer),version);
+            InitSocket.sendData("BACKCONNECT " + own_address);
+            
+            InitSocket.sendData("FRIEND REQUEST\n\n");
+            char dataBuffer[128] = { 0 };
+
+            InitSocket.receiveData(dataBuffer, 128);
+
+            string IPasString(dataBuffer);
+            storeIP(knownIPs, IPasString);
 
         }
         else {
@@ -79,9 +103,9 @@ int main() {
             storeIP(knownIPs, own_address);
         }
     }
+    
 
-
-    thread t1(listenForIncomingConnection, own_address, version, std::ref(knownIPs), std::ref(usedMsgIDs)); // thread #2
+    //thread t2(listenForIncomingConnection, own_address, version, std::ref(knownIPs), std::ref(usedMsgIDs)); // thread #2
 
     //sendMessageIDlessDEBUG("FRIENDREQUEST", knownIPs);
     //sendMessageIDlessDEBUG("SEND 123456 This is an example message", knownIPs);

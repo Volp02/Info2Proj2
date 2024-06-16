@@ -1,10 +1,12 @@
 #pragma once
 #include <vector>
 #include <iostream>
+#include <string>
+#include "socket.h"
 
 //Header for FirstTimeConnect
 
-bool FirstTimeconnect(std::string firstIP, double version);
+SocketClss firstHandshake(std::string IP, int Port, double OwnVersion);
 bool backConnectSend(std::string ownIP, std::string sendIP);
 std::string sendFriendRequest(std::string targetIP);
 bool sendMessage(std::string Message, int MessageID, std::vector<std::string> &knownClients);

@@ -9,88 +9,62 @@ typedef int socklen_t;
 
 #include "connect.h"
 #include <sstream>
+#include "socket.h"
 
 #define PORT 26000
 
 using namespace std;
 
-bool FirstTimeconnect(string firstIP, double version)
-{
-    cout << "FirstTimeConnect: connectint to:  " << firstIP << endl;
-    struct sockaddr_in serv_addr; // Struktur für die Server-Adresse
-    int client_socket;            // Socket-Descriptor des Clients
 
-    // creat socket
-    if ((client_socket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == 0)
-    {
-        std::cout << "client socket setup failed" << std::endl;
-        return false;
+SocketClss firstHandshake(string IP, int Port, double OwnVersion) {
+
+    SocketClss serverSocket; // Erstelle ein MySocket-Objekt 
+    if (!serverSocket.C_createAndConnect(IP, Port)) {
+        std::cerr << "Fehler beim Erstellen oder Binden des Sockets!" << std::endl;
+        return SocketClss(); // Rückgabe eines leeren MySocket-Objekts im Fehlerfall
     }
 
-    cout <<"FirstTimeConnect: socket created\n";
+    serverSocket.sendData("INFO2 CONNECT/" + std::to_string(OwnVersion));
 
-    // 2. Server-Adresse konfigurieren
-    serv_addr.sin_family = AF_INET;   // IPv4-Adressfamilie
-    serv_addr.sin_port = htons(PORT); // Portnummer in Netzwerk-Byte-Reihenfolge umwandeln
+    char dataBuffer[1024] = { 0 };
+    int receiveData = serverSocket.receiveData(dataBuffer, 1024);
 
-    cout << "FirstTimeConnect: port set\n";  
-
-    // Konvertiert IPv4-Adresse von Text zu Binärformat
-    if (inet_pton(AF_INET, firstIP.c_str(), &serv_addr.sin_addr) <= 0)
-    {
-        std::cerr << "Ungültige Adresse oder Adresse nicht unterstützt\n";
-        return false; // Beenden mit Fehlercode 1
+    if (receiveData <= 0) {
+        std::cerr << "Fehler beim Empfangen von Daten." << std::endl;
+        serverSocket.closeSocket();
+        return SocketClss();
     }
 
-    //std::cout << "Adresse Konvertiert\n";
+    std::string connectResponse(dataBuffer, 14);
+    if (connectResponse == "INFO2 CONNECT/") {
 
-    // 3. Verbindung zum Server herstellen
-    connect(client_socket, (struct sockaddr*)&serv_addr, sizeof(serv_addr));
-    
-    #ifdef _WIN32
-        int error_code = WSAGetLastError(); // Fehlercode abrufen
-        std::cerr << "Verbindungsfehler: " << error_code << std::endl;
-    #else
-        std::cerr << "Verbindungsstatus: " << strerror(errno) << std::endl;
-    #endif
-    
-    std::cout << "FirstTimeConnect: Verbunden zum Server " << firstIP << endl ;
+        std::cout << "received Connection attempt" << std::endl;
+        std::stringstream ss2;
+        std::string responseVers(dataBuffer + 14);
+        ss2 << responseVers;
+        double clientVersion;
+        ss2 >> clientVersion;
 
-    // 4. initiate handshake
-    std::stringstream ss;
-    string Sversion;
-    ss << version;
-    ss >> Sversion;
+        if (clientVersion >= OwnVersion) {
+            std::cout << "handshake successful\n";
+            std::string acceptConnection = "INFO2 OK\n\n";
 
-    string message = "INFO2 CONNECT/" + Sversion + "\n\n";
-    cout<< "send: " << message << endl;
+            serverSocket.sendData(acceptConnection); // Verwende sendData von MySocket
+            std::cout << "responds with INFO2 OK! " << std::endl;
 
-    send(client_socket, message.c_str(), message.length(), 0); // Senden der Nachricht an den Server
-    //std::cout << "Nachricht gesendet: " << message << std::endl;
-
-    // 5. Antwort empfangen
-    char buffer[16] = {0};
-
-    recv(client_socket, buffer, sizeof(buffer), 0);
-
-    string response(buffer);
-    closesocket(client_socket);
-
-    if (!strcmp(response.c_str(), "INFO2 OK\n\n"))
-    {
-        std::cout << "FirstTimeConnect: handshake succsessfull -> receved 'INF2 OK'!\n";
-        std::cout << response.c_str() << endl;
-        return true;
+            serverSocket.closeSocket(); // Schließe den Server-Socket nach dem Handshake
+            return serverSocket; // Gib den Client-Socket zurück
+        }
+        else {
+            std::cout << "handshake failed -> old version: " << clientVersion << endl;
+        }
+        std::cout << "handshake failed\n";
     }
 
-    cout << "FirstTimeConnect: handshake failed\nNo connection established with " << firstIP;
-    //cout << response.c_str() << endl;
-
-    // 5. Verbindung schließen
-    closesocket(client_socket);
-
-    return false; // no connection
+    serverSocket.closeSocket(); // Schließe den Server-Socket nach dem Handshake
+    return SocketClss(); //Gib den leere socket class zurück
 }
+
 bool backConnectSend(string ownIP, string sendIP)
 {
     struct sockaddr_in serv_addr; // Struktur für die Server-Adresse

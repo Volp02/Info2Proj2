@@ -132,6 +132,7 @@
     <ClCompile Include="listen.cpp" />
     <ClCompile Include="main-win.cpp" />
     <ClCompile Include="connect.cpp" />
+    <ClCompile Include="Socket.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataStorage.h" />
@@ -139,6 +140,7 @@
     <ClInclude Include="connect.h" />
     <ClInclude Include="linuxLib.h" />
     <ClInclude Include="listen.h" />
+    <ClInclude Include="socket.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
