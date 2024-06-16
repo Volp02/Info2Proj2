@@ -14,6 +14,7 @@
 
 bool storeIP(std::vector<SocketClss> &IPStr, const SocketClss &IP)
 {
+	std::cout << "--- im function storeIP ---" << std::endl;
 	IPStr.push_back(IP);
 
 	return true;
@@ -21,12 +22,14 @@ bool storeIP(std::vector<SocketClss> &IPStr, const SocketClss &IP)
 
 bool storeMessageID(std::vector<int> &MessageID_Vector, int MessageID)
 {
+	std::cout << "--- im function storeMessageID ---" << std::endl;
 	MessageID_Vector.push_back(MessageID);
 	return 1;
 }
 
 int createMessageID(std::vector<int> &MessageID_Vector)
 {
+	std::cout << "--- im function createMessageID ---" << std::endl;
 	int msgID;
 	do
 	{
@@ -40,6 +43,7 @@ int createMessageID(std::vector<int> &MessageID_Vector)
 
 bool checkMessageID(std::vector<int> &MessageID_Vector, int MessageID)
 {
+	std::cout << "--- im function checkMessageID ---" << std::endl;
 	for (int i = 0; i < MessageID_Vector.size(); i++)
 	{
 		if (MessageID == MessageID_Vector[i])
@@ -54,7 +58,8 @@ int countIPs(std::vector<SocketClss> &IPStr){
 }
 
 std::string giveIP(std::vector<SocketClss> &IPStr)
-{
+{	
+	std::cout << "--- im function giveIP ---" << std::endl; 
 	static int count = 1;
 
 	if (IPStr.empty())

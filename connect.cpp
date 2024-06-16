@@ -18,6 +18,8 @@ using namespace std;
 
 SocketClss firstHandshake(SocketClss serverSocket, std::string IP, int Port, double OwnVersion) {
 
+    cout << "--- im function firstHandshake ---" << endl;
+
     if(serverSocket.sockfd == -1) {
         SocketClss serverSocket; // Erstelle ein MySocket-Objekt 
         if (!serverSocket.C_createAndConnect(IP, Port)) {
@@ -72,7 +74,7 @@ SocketClss firstHandshake(SocketClss serverSocket, std::string IP, int Port, dou
 // TO BE CHANGED TO USE CLASS: \/
 bool backConnectSend(SocketClss socket, string ownIP, string sendIP)
 {
-
+    cout << "--- im function backConnectSend ---" << endl;
     std::cout << "Backconnect to server " << sendIP << endl;
 
     string message = "BACKCONNECT " + ownIP;
@@ -84,7 +86,7 @@ bool backConnectSend(SocketClss socket, string ownIP, string sendIP)
 }
 string sendFriendRequest(SocketClss socket, std::string targetIP) {
 
-    
+    cout << "--- im function sendFriendRequest ---" << endl;
     std::cout << "sendFriendRequest: Verbunden zum Server " << targetIP << endl;
 
 
@@ -106,6 +108,7 @@ string sendFriendRequest(SocketClss socket, std::string targetIP) {
 
 bool sendMessage(std::string Message, int MessageID, std::vector<SocketClss>& knownClients) {
 
+    cout << "--- im function sendMessage ---" << endl;
     for (int i = 0; i <= sizeof(knownClients); i++) {
 
         string message = "SEND  " + MessageID + ' ' + Message;

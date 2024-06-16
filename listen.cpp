@@ -26,7 +26,7 @@ using std::vector;
 
 SocketClss firstHandshakeHandler(string ownIP, double OwnVersion)
 {
-
+    cout << "--- im thread firstHandshakeHandler" << endl;
     SocketClss ServerSocket;
     ServerSocket.S_createAndBind(PORT); // create and bind socke
 
@@ -79,6 +79,7 @@ SocketClss firstHandshakeHandler(string ownIP, double OwnVersion)
 }
 int listenForIncomingConnection(SocketClss &socket, string ownIP, double OwnVersion, vector<SocketClss> &IPStr, vector<int> &MessageIDs)
 {
+    cout << "--- im thread listenForIncomingConnection" << endl;
     // Unendliche Schleife, um mehrere Client-Verbinungen zu akzeptieren
     while (true)
     {
