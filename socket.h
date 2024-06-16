@@ -107,6 +107,8 @@ public:
         SocketClss acceptSocket;
         socklen_t clientAddrLen = sizeof(acceptSocket.serverAddr);
         acceptSocket.sockfd = accept(sockfd, (struct sockaddr*)&acceptSocket.serverAddr, &clientAddrLen);
+        
+        //Error Handling:
         if (acceptSocket.sockfd < 0) {
 #ifdef _WIN32
             char buffer[256]; // Angemessene Puffergr��e
