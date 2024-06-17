@@ -43,7 +43,7 @@ int listenHandler(string ownIP, double OwnVersion, vector<string> &knownClients,
     string connectResponse(dataBuffer, 14);
     if (connectResponse == "INFO2 CONNECT/")
     {
-
+        cout << "handshake Confirmed!"<< endl;
         memset(dataBuffer, 0, 1024);
 
         acceptSocket.receiveData(dataBuffer, 1024);

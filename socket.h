@@ -91,10 +91,9 @@ public:
 
     // Daten senden
     bool sendData(const string& message) {
-
-        if (send(sockfd, message.c_str(), message.length(), 0) < 0) {
+    
+        if (message == "" && send(sockfd, message.c_str(), message.length(), 0) < 0) {
             cerr << "Fehler beim Senden der Daten: " << message << endl;
-            return false;
         }
         //DEBUG
         //cout << "data send: " << message << endl;
