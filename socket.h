@@ -81,11 +81,11 @@ public:
 
     // Eingehende Verbindung akzeptieren (nur für Server)
     SocketClss S_acceptConnection() {
+        
         SocketClss acceptSocket;
         socklen_t clientAddrLen = sizeof(acceptSocket.serverAddr);
         acceptSocket.sockfd = accept(sockfd, (struct sockaddr*)&acceptSocket.serverAddr, &clientAddrLen);
         
-
         return acceptSocket; // Neues MySocket-Objekt für die Client-Verbindung zur�ckgeben
     }
 

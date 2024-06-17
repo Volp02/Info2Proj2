@@ -19,8 +19,9 @@ typedef int socklen_t;
 #define PORT 26000
 
 using namespace std;
-
+/*
 SocketClss firstHandshakeHandler(string ownIP, double OwnVersion)
+
 {
     cout << "--- im thread firstHandshakeHandler" << endl;
     SocketClss ServerSocket;
@@ -76,26 +77,32 @@ SocketClss firstHandshakeHandler(string ownIP, double OwnVersion)
         // ServerSocket.S_listen(PORT);
     }
 }
+*/
+
 int listenHandler(SocketClss &socket, string ownIP, double OwnVersion, vector<string> &knownClients, vector<int> &MessageIDs)
 {
     cout << "--- im thread listenForIncomingConnection" << endl;
     socket.S_createAndBind(PORT); // create and bind socke
-    socket.S_listen(PORT);
+    
     
     cout << "Warte auf Verbindungen..." << endl;
+    // 5. accept connection
+
+    socket.S_listen(PORT);
+    socket.sockfd = -1 ;
+    SocketClss acceptSocket = socket.S_acceptConnection();
+
+    // 6. recieve data
 
     // Unendliche Schleife, um mehrere Client-Verbinungen zu akzeptieren
-    while (true)
-    {
-        // 5. accept connection
-        SocketClss acceptSocket = socket.S_acceptConnection();
-
-        // 6. recieve data
+    while (acceptSocket.sockfd >= 0)
+    {   
+        
         char dataBuffer[1024] = {0};
 
-        acceptSocket.receiveData(dataBuffer, 1024);
+        acceptSocket.receiveData(dataBuffer, 1024); 
 
-        //cout << "data recieved: " << dataBuffer << endl;
+        cout << "data recieved: " << dataBuffer << endl;
 
         string connectResponse(dataBuffer);
         //cout << "dataBuffer string " << connectResponse << endl;
@@ -179,5 +186,66 @@ int listenHandler(SocketClss &socket, string ownIP, double OwnVersion, vector<st
     // Server-Socket schließen (wird nie erreicht)
 
     socket.closeSocket();
+
+    cout << "the thread listenForIncomingConnection has finished" << endl;
     return 0;
+}
+
+
+bool listenThread(){
+
+     cout << "--- im thread listenForIncomingConnection" << endl;
+    
+    int server_fd, new_socket;
+    struct sockaddr_in address;
+    int opt = 1;
+    int addrlen = sizeof(address);
+    char buffer[1024] = {0};
+
+
+    // 1. Socket erstellen
+    if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
+        std::cout << "socket failed" << std::endl;
+        return 1;
+    }
+
+
+    // 2. Socket-Adresse konfigurieren
+    address.sin_family = AF_INET;
+    address.sin_addr.s_addr = INADDR_ANY;
+    address.sin_port = htons(PORT);     // Port setzen
+
+    // 3. Socket an Port binden
+    if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) < 0) {
+        std::cout << "bind failed" << std::endl;
+        return 1;
+    }
+
+    // 4. Auf Verbindungen warten (listen)
+    if (listen(server_fd, 5) < 0) {
+        std::cout << "listen failed" << std::endl;
+        return 1;
+    }
+    for(int i = 0; i < 5; i++){
+
+        std::cout << "Server wartet auf Verbindungen auf " << "127.0.0.1" << ":" << PORT << std::endl;
+
+        // 5. Verbindung annehmen (accept)
+        if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen)) < 0) {
+            std::cout << "accept failed" << std::endl;
+            return 1;
+        }
+
+        std::cout << "Verbindung akzeptiert!" << std::endl;
+        
+        // 6. Daten empfangen (recv)
+        int valread = read(new_socket, buffer, 1024);
+        std::cout << "Empfangene Nachricht: " << buffer << std::endl << std::endl;
+
+        memset(buffer, 0, 1024);
+
+
+
+    }
+
 }

@@ -42,6 +42,7 @@ bool firstHandshake(std::string IP, int Port, double OwnVersion, std::vector<std
 
 
 // TO BE CHANGED TO USE CLASS: \/
+/*
 bool backConnectSend(SocketClss socket, string ownIP, string sendIP)
 {
     cout << "--- im function backConnectSend ---" << endl;
@@ -75,7 +76,7 @@ string sendFriendRequest(SocketClss socket, std::string targetIP) {
     // 5. Verbindung schließen
     
 }
-
+*/
 bool sendMessageToClients(string Message, int MessageID, vector<string>& knownClients, int Port, double OwnVersion) {
 
     cout << "--- im function sendMessage ---" << endl;

@@ -133,9 +133,10 @@ int main()
     string messageInput;
 
     cout << "message to send: ";
-    getline(cin, messageInput);
+    
+    //getline(cin, messageInput);
 
-    sendMessageToClients(messageInput, createMessageID(usedMsgIDs), knownClients, PORT , version);
+    //sendMessageToClients(messageInput, createMessageID(usedMsgIDs), knownClients, PORT , version);
 
     while(true){}
 
