@@ -28,15 +28,18 @@ int listenHandler(string ownIP, double OwnVersion, vector<string> &knownClients,
     serverSocket.S_createAndBind(PORT);
     serverSocket.S_listen();
 
-    SocketClss acceptSocket;
-    acceptSocket = serverSocket.S_acceptConnection();
+
+    SocketClss* acceptSocket = serverSocket.S_acceptConnection(); 
+
+    
 
     char dataBuffer[1024];
-    acceptSocket.receiveData(dataBuffer, 1024);
+    acceptSocket->receiveData(dataBuffer, 1024);
 
     //cout << "Received data: " << dataBuffer << endl;
-    string handshakeResponse = acceptSocket.handshakeIn(dataBuffer, OwnVersion);
-    acceptSocket.sendData(handshakeResponse); // Handle Handshake
+    string handshakeResponse = acceptSocket->handshakeIn(dataBuffer, OwnVersion);
+    cout << " respoinding ;" << handshakeResponse << endl;
+    acceptSocket->sendData(handshakeResponse); // Handle Handshake
 
     // 6. recieve data
 
@@ -46,7 +49,7 @@ int listenHandler(string ownIP, double OwnVersion, vector<string> &knownClients,
         cout << "handshake Confirmed!"<< endl;
         memset(dataBuffer, 0, 1024);
 
-        acceptSocket.receiveData(dataBuffer, 1024);
+        acceptSocket->receiveData(dataBuffer, 1024);
 
         string connectResponse(dataBuffer);
         // cout << "dataBuffer string " << connectResponse << endl;
@@ -65,7 +68,7 @@ int listenHandler(string ownIP, double OwnVersion, vector<string> &knownClients,
                 cout << responseIP;
                 if (checkIP(knownClients, responseIP))
                 {
-                    acceptSocket.closeSocket();
+                    acceptSocket->closeSocket();
                     firstHandshake(responseIP, PORT, OwnVersion, knownClients);
                 }
                 else
@@ -75,8 +78,8 @@ int listenHandler(string ownIP, double OwnVersion, vector<string> &knownClients,
             {
                 string IP;
                 IP = giveIP(knownClients);
-                acceptSocket.sendData(IP);
-                acceptSocket.closeSocket();
+                acceptSocket->sendData(IP);
+                acceptSocket->closeSocket();
             }
             else if (!(strcmp(SENDResponse.c_str(), "SEND")))
             {
@@ -92,17 +95,20 @@ int listenHandler(string ownIP, double OwnVersion, vector<string> &knownClients,
                     storeMessageID(MessageIDs, RecevedMessageIDint);                                             // Adds messageID to already known messagIDs
                     sendMessageToClients(MessageToForward, RecevedMessageIDint, knownClients, PORT, OwnVersion); // forwars message to all clients
                 }
-                acceptSocket.closeSocket();
+                acceptSocket->closeSocket();
             }
             else
             {
 
                 cout << "Request unknown: " << connectResponse << endl;
-                acceptSocket.closeSocket();
+                acceptSocket->closeSocket();
             }
         }
     } // Ende der Schleife
+    acceptSocket->closeSocket();
+    delete acceptSocket;
 
+    serverSocket.closeSocket();
     //cout << "Thread closed" << endl;
     return threadNum;
 }

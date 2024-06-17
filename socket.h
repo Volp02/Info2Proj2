@@ -80,23 +80,28 @@ public:
     }
 
     // Eingehende Verbindung akzeptieren (nur für Server)
-    SocketClss S_acceptConnection() {
-        
-        SocketClss acceptSocket;
-        socklen_t clientAddrLen = sizeof(acceptSocket.serverAddr);
-        acceptSocket.sockfd = accept(sockfd, (struct sockaddr*)&acceptSocket.serverAddr, &clientAddrLen);
-        
-        return acceptSocket; // Neues MySocket-Objekt für die Client-Verbindung zur�ckgeben
+    SocketClss* S_acceptConnection() {
+        SocketClss* acceptSocket = new SocketClss();                    // Allocate on heap
+        socklen_t clientAddrLen = sizeof(acceptSocket->serverAddr);
+        acceptSocket->sockfd = accept(sockfd, (struct sockaddr*)&acceptSocket->serverAddr, &clientAddrLen);
+
+        if (acceptSocket->sockfd == -1) {
+            delete acceptSocket;                                        // Clean up if accept failed
+            return nullptr;
+        }
+
+        return acceptSocket;                                            // Return the pointer to the dynamically allocated object
     }
 
     // Daten senden
     bool sendData(const string& message) {
-    
-        if (message == "" && send(sockfd, message.c_str(), message.length(), 0) < 0) {
+
+        if (send(sockfd, message.c_str(), message.length(), 0) < 0) {
             cerr << "Fehler beim Senden der Daten: " << message << endl;
+            return false;
         }
         //DEBUG
-        //cout << "data send: " << message << endl;
+        cout << "data send: " << message << endl;
         return true;
     }
 
