@@ -43,6 +43,11 @@ int main()
     initWinsock();
 #endif
 
+
+    //listenTesting();
+
+
+
     cout << "enter own IP (or only last 3 digits):" << endl;
 
     std::string addressStart;
@@ -104,8 +109,11 @@ int main()
         
     }
 
+
+
     SocketClss ListeningSocket;
-    thread t1(listenHandler,std::ref(ListeningSocket),own_address, version, std::ref(knownClients), std::ref(usedMsgIDs)); 
+    thread t1(listenThreading,own_address, version, std::ref(knownClients), std::ref(usedMsgIDs),1 ); 
+
 
 
     if(!firstUsr &&  knownClients.size() >0 ){
@@ -137,10 +145,12 @@ int main()
     //getline(cin, messageInput);
 
     //sendMessageToClients(messageInput, createMessageID(usedMsgIDs), knownClients, PORT , version);
-
+    //thread t2(listenHandler, own_address, version, std::ref(knownClients), std::ref(usedMsgIDs)); 
     while(true){}
 
     t1.join();
+    //t2.join();
+
     
     return 0;
 }

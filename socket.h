@@ -144,6 +144,38 @@ public:
 
 
     }
+
+
+    string handshakeIn(char dataBuffer[], double OwnVersion)
+{
+    string connectResponse(dataBuffer, 14);
+    if (connectResponse == "INFO2 CONNECT/")
+    {
+
+        cout << "received Connection attempt" << endl;
+        stringstream ss2;
+        string responseVers(dataBuffer + 14);
+        ss2 << responseVers;
+        double clientVersion;
+        ss2 >> clientVersion;
+
+        if (clientVersion >= OwnVersion)
+        {
+            cout << "incoming handshake successful\n";
+            return "INFO2 OK\n\n";
+        }
+        else
+        {
+
+            cout << "handshake failed -> old version: " << clientVersion << endl;
+            return "handshake failed: old version!\nYour version: " + to_string(clientVersion) + " Required version: " + to_string(OwnVersion) + " or higher\n\n";
+        }
+    }
+
+    return "Handshake failed!\n   - bad request\n\n";
+}
+
+
 private:
 
     struct sockaddr_in serverAddr;
