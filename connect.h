@@ -4,11 +4,16 @@
 #include <string>
 #include "socket.h"
 
+using namespace std;
+
 //Header for FirstTimeConnect
 
-SocketClss firstHandshake(SocketClss serverSocket,std::string IP, int Port, double OwnVersion);
-bool backConnectSend(std::string ownIP, std::string sendIP);
-std::string sendFriendRequest(std::string targetIP);
-bool sendMessageToClients(std::string Message, int MessageID, std::vector<SocketClss>& knownClients);
+bool firstHandshake(string IP, int Port, double OwnVersion, vector<string> &knownClients);
 
-bool sendMessageIDlessDEBUG(std::string Message, std::vector<std::string> &knownClients);
+bool backConnectSend(string ownIP, string sendIP);
+string sendFriendRequest(string targetIP);
+
+//sends the Message to all known Clients
+bool sendMessageToClients(string Message, int MessageID, vector<string>& knownClients, int Port, double OwnVersion);
+
+bool sendMessageIDlessDEBUG(string Message, vector<string> &knownClients);

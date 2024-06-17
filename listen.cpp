@@ -18,20 +18,16 @@ typedef int socklen_t;
 // close  -  closesocketsocket
 #define PORT 26000
 
-using std::cin;
-using std::cout;
-using std::endl;
-using std::string;
-using std::vector;
+using namespace std;
 
 SocketClss firstHandshakeHandler(string ownIP, double OwnVersion)
 {
     cout << "--- im thread firstHandshakeHandler" << endl;
     SocketClss ServerSocket;
     ServerSocket.S_createAndBind(PORT); // create and bind socke
-    
-    //DEBUG
-    cout<<"serverSocket created and bound" << endl;
+
+    // DEBUG
+    cout << "serverSocket created and bound" << endl;
 
     ServerSocket.S_listen(PORT);
     cout << "Warte auf Verbindungen..." << endl;
@@ -52,78 +48,84 @@ SocketClss firstHandshakeHandler(string ownIP, double OwnVersion)
             if (connectResponse == "INFO2 CONNECT/")
             {
 
-                std::cout << "received Connection attempt" << std::endl;
-                std::stringstream ss2;
-                std::string responseVers(dataBuffer + 14);
+                cout << "received Connection attempt" << endl;
+                stringstream ss2;
+                string responseVers(dataBuffer + 14);
                 ss2 << responseVers;
                 double clientVersion;
                 ss2 >> clientVersion;
 
                 if (clientVersion >= OwnVersion)
                 {
-                    std::cout << "handshake successful\n";
-                    std::string acceptConnection = "INFO2 OK\n\n";
+                    cout << "handshake successful\n";
+                    string acceptConnection = "INFO2 OK\n\n";
 
                     acceptSocket.sendData(acceptConnection); // Verwende sendData von MySocket
-                    std::cout << "responds with INFO2 OK! " << std::endl;
+                    cout << "responds with INFO2 OK! " << endl;
 
                     return acceptSocket;
                 }
                 else
                 {
-                    std::cout << "handshake failed -> old version: " << clientVersion << endl;
+                    cout << "handshake failed -> old version: " << clientVersion << endl;
                     return SocketClss();
                 }
             }
         }
 
-        //ServerSocket.S_listen(PORT);
+        // ServerSocket.S_listen(PORT);
     }
 }
-int listenForIncomingConnection(SocketClss &socket, string ownIP, double OwnVersion, vector<SocketClss> &IPStr, vector<int> &MessageIDs)
+int listenHandler(SocketClss &socket, string ownIP, double OwnVersion, vector<string> &knownClients, vector<int> &MessageIDs)
 {
     cout << "--- im thread listenForIncomingConnection" << endl;
+    socket.S_createAndBind(PORT); // create and bind socke
+    socket.S_listen(PORT);
+    
+    cout << "Warte auf Verbindungen..." << endl;
+
     // Unendliche Schleife, um mehrere Client-Verbinungen zu akzeptieren
     while (true)
     {
+        // 5. accept connection
+        SocketClss acceptSocket = socket.S_acceptConnection();
+
         // 6. recieve data
         char dataBuffer[1024] = {0};
-        //int recievedData = socket.receiveData(dataBuffer, 1024); // receive handshake
-        int recievedData = recv(socket.sockfd, dataBuffer, 1024, 0);
-        std::cout << "data recieved: " << dataBuffer << std::endl;
-      
+
+        acceptSocket.receiveData(dataBuffer, 1024);
+
+        //cout << "data recieved: " << dataBuffer << endl;
 
         string connectResponse(dataBuffer);
-        cout << "dataBuffer string " << connectResponse << endl;
+        //cout << "dataBuffer string " << connectResponse << endl;
 
-        if (recievedData > 0)
+        if (sizeof(dataBuffer) > 0)
         { // check handshake response
 
             string connectResponse(dataBuffer, 14);
             if (connectResponse == "INFO2 CONNECT/")
             {
 
-                std::cout << "received Connection attempt" << std::endl;
-                std::stringstream ss2;
-                std::string responseVers(dataBuffer + 14);
+                cout << "received Connection attempt" << endl;
+                stringstream ss2;
+                string responseVers(dataBuffer + 14);
                 ss2 << responseVers;
                 double clientVersion;
                 ss2 >> clientVersion;
 
                 if (clientVersion >= OwnVersion)
                 {
-                    std::cout << "handshake successful\n";
-                    std::string acceptConnection = "INFO2 OK\n\n";
+                    cout << "incoming handshake successful\n";
+                    socket.sendData("INFO2 OK\n\n");
+                    cout << "responds with INFO2 OK! " << endl;
 
-                    socket.sendData(acceptConnection); // Verwende sendData von MySocket
-                    std::cout << "responds with INFO2 OK! " << std::endl;
-
-                    // acceptSocket.closeSocket(); // Schließe den Server-Socket nach dem Handshake
-                    //  Gib den Client-Socket zurück
+                    acceptSocket.closeSocket(); // Schließe den Server-Socket nach dem Handshake
                 }
                 else
                 {
-                    std::cout << "handshake failed -> old version: " << clientVersion << endl;
+                    cout << "handshake failed -> old version: " << clientVersion << endl;
+                    acceptSocket.closeSocket(); // Schließe den Server-Socket nach einem fehlenden Handshake
                 }
             }
 
@@ -133,15 +135,18 @@ int listenForIncomingConnection(SocketClss &socket, string ownIP, double OwnVers
                 cout << "receved backConnection attempt" << endl;
                 string responseIP(dataBuffer + 12);
                 cout << responseIP;
-                firstHandshake(socket,responseIP, PORT, OwnVersion);
+                if(checkIP(knownClients, responseIP)){
+                    firstHandshake(responseIP, PORT, OwnVersion, knownClients);
+                }
+                else cout<< responseIP <<" is already a known client" << endl;
+                
             }
 
             string FriendRqResponse(dataBuffer, 18);
             if (!(strcmp(BackconnectResponse.c_str(), "FRIEND REQUEST\n\n")))
             {
-
                 string IP;
-                IP = giveIP(IPStr);
+                IP = giveIP(knownClients);
                 socket.sendData(IP);
             }
 
@@ -151,55 +156,21 @@ int listenForIncomingConnection(SocketClss &socket, string ownIP, double OwnVers
 
                 string MessageToForward(dataBuffer);
                 string RecevedMessageID(dataBuffer + 5, 11);
-                std::stringstream ss3;
+                stringstream ss3;
                 ss3 << RecevedMessageID;
                 int RecevedMessageIDint;
                 ss3 >> RecevedMessageIDint;
 
-                if (!checkMessageID(MessageIDs, RecevedMessageIDint))
+                if (!checkMessageID(MessageIDs, RecevedMessageIDint))       //Check if messageID is already known
                 {
-
-{
-	char input;
-
-	std::cout << "    ..........................................................\n";
-	std::cout << "    .                                                        .\n";
-	std::cout << "    .      INFO2 PROJECT from Lajos, Matthias, Andi          .\n";
-	std::cout << "    .                                                        .\n";
-	std::cout << "    .      hit [j] to join an existing P2P Network!          .\n";
-	std::cout << "    .      hit [i] to create a new P2P Network!              .\n";
-	std::cout << "    .                                                        .\n";
-	std::cout << "    ..........................................................\n\n";
-	std::cout << "Eingabe: ";
-
-	Input:
-	std::cin >> input;
-
-	if (input == 'j')
-	{
-		return false;
-	}
-	else if (input == 'i')
-	{
-
-		return true;
-	}
-	else
-	{
-		std::cout << "Bitte nur j oder i eingeben! " << std::endl;
-		goto Input;
-	}
-}
-
-//void sendMessage()
-{
-	
-}
-(MessageToForward, RecevedMessageIDint, IPStr);
+                    storeMessageID(MessageIDs, RecevedMessageIDint);        //Adds messageID to already known messagIDs
+                    sendMessageToClients(MessageToForward,  RecevedMessageIDint, knownClients, PORT, OwnVersion);   //forwars message to all clients
                 }
+                
             }
         }
-        else break;
+        else
+            break;
 
         // cout << "whiling";
 
