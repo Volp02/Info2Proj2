@@ -35,8 +35,8 @@ int listenHandler(string ownIP, double OwnVersion, vector<string> &knownClients,
     acceptSocket.receiveData(dataBuffer, 1024);
 
     //cout << "Received data: " << dataBuffer << endl;
-
-    acceptSocket.sendData(acceptSocket.handshakeIn(dataBuffer, OwnVersion)); // Handle Handshake
+    string handshakeResponse = acceptSocket.handshakeIn(dataBuffer, OwnVersion);
+    acceptSocket.sendData(handshakeResponse); // Handle Handshake
 
     // 6. recieve data
 
