@@ -97,7 +97,7 @@ public:
             return false;
         }
         //DEBUG
-        cout << "data send: " << message << endl;
+        //cout << "data send: " << message << endl;
         return true;
     }
 
@@ -112,7 +112,7 @@ public:
     void closeSocket() {
         if (sockfd >= 0) { // Nur schlie�en, wenn der Socket g�ltig ist
 
-            cout<< "Closing socket..." << sockfd <<endl;
+            //cout<< "Closing socket..." << sockfd <<endl;
             closesocket(sockfd);
 
             sockfd = -1; // Socket-Deskriptor auf ung�ltig setzen

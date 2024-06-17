@@ -88,8 +88,7 @@ bool sendMessageToClients(string Message, int MessageID, vector<string>& knownCl
 
         if(SendSocket.handshakeOut(OwnVersion)){
 
-            string sendPaload;
-            sendPaload = "SEND " + to_string(MessageID) + ' ' + Message;
+            string sendPaload =  "SEND " + to_string(MessageID) + ' ' + Message;
 
             SendSocket.sendData(sendPaload); // Senden der Nachricht)
 
