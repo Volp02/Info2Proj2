@@ -36,53 +36,6 @@ typedef int socklen_t;
 
 using namespace std;
 
-int listenForIncomingMessages(vector<SocketClss> &establishedConnections, vector<int> &usedMsgIDs, string ownIP, double OwnVersion);
-
-int listenForIncomingConnectionsThread(vector<SocketClss> &establishedConnections, vector<int> &usedMsgIDs, string ownIP, double OwnVersion)
-{
-    std::cout << "--- im function listenForIncomingConnectionsThread ---" << std::endl;
-    while (true)
-    {
-        if (storeIP(establishedConnections, firstHandshakeHandler(ownIP, OwnVersion)))
-            ;
-    }
-}
-
-int listenForIncomingMessages(vector<SocketClss> &establishedConnections, vector<int> &usedMsgIDs, string ownIP, double OwnVersion)
-{
-    int sizeTmp = countIPs(establishedConnections) - 1;
-    while (true)
-    {
-        if (sizeTmp < countIPs(establishedConnections) - 1)
-        {
-            sizeTmp = countIPs(establishedConnections) - 1;
-            // Dereference the pointer returned by countIPs
-            if (countIPs(establishedConnections) > 0)
-            {
-                std::cout << "--- im function listenForIncomingMessages ---" << std::endl;
-
-                std::thread *listening = new std::thread([&]()
-                                                         { listenForIncomingConnection(std::ref(establishedConnections[sizeTmp]), ownIP, OwnVersion,
-                                                                                       std::ref(establishedConnections), std::ref(usedMsgIDs)); });
-                listening->join();
-            }
-        }
-
-    }
-    return 0;
-}
-
-
-static int listenForMessage(SocketClss socket, double version, string own_address, vector<SocketClss> &establishedConnections, vector<int> &usedMsgIDs)
-{
-    std::cout << "--- im function listenForMessage ---" << std::endl;
-    cout << "listenForMessage started a process" << endl;
-
-    listenForIncomingConnection(socket, own_address, version, establishedConnections, usedMsgIDs);
-
-    return 0;
-}
-
 int main()
 {
 
