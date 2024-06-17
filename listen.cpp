@@ -34,7 +34,7 @@ int listenHandler(string ownIP, double OwnVersion, vector<string> &knownClients,
     char dataBuffer[1024];
     acceptSocket.receiveData(dataBuffer, 1024);
 
-    //DebugFlag cout << "Received data: " << dataBuffer << endl;
+    //cout << "Received data: " << dataBuffer << endl;
 
     acceptSocket.sendData(acceptSocket.handshakeIn(dataBuffer, OwnVersion)); // Handle Handshake
 
