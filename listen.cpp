@@ -53,7 +53,7 @@ int listenHandler(string ownIP, double OwnVersion, vector<string> &knownClients,
         cout << "handshake Confirmed!"<< endl;
         memset(dataBuffer, 0, 1024);
 
-        handleRequests(*acceptSocket,ownIP, OwnVersion, knownClients, MessageIDs, threadNum);
+        while (handleRequests(*acceptSocket, ownIP, OwnVersion, knownClients, MessageIDs, threadNum));
         
 
     } // Ende der Schleife
@@ -92,14 +92,17 @@ int listenThreading(string ownIP, double OwnVersion, vector<string> &knownClient
 bool handleRequests(SocketClss &acceptSocket,string ownIP, double OwnVersion, vector<string> &knownClients, vector<int> &MessageIDs, int threadNum)
 {
     char dataBuffer[1024];
+    cout << "ready for command" << endl;
+    int BytesRecieved = acceptSocket.receiveData(dataBuffer, 1024);
     
-    if (acceptSocket.receiveData(dataBuffer, 1024) > 0 && acceptSocket.sockfd != -1)
+    if (BytesRecieved > 0 && acceptSocket.sockfd != -1)
         {
             cout << "recieved ";
 
             string BackconnectResponse(dataBuffer, 11);
             string FriendRqResponse(dataBuffer, 18);
             string SENDResponse(dataBuffer, 4);
+            string LogoffResponse(dataBuffer, 6);
 
             if (BackconnectResponse == "BACKCONNECT")
             {
@@ -117,6 +120,7 @@ bool handleRequests(SocketClss &acceptSocket,string ownIP, double OwnVersion, ve
 
                 cout << "end of Connection attempt" << endl;
 
+                return true;
             }
 
             else if (FriendRqResponse == "FRIEND REQUEST\n\n")
@@ -130,6 +134,7 @@ bool handleRequests(SocketClss &acceptSocket,string ownIP, double OwnVersion, ve
 
                 cout << "end of Friendrequest" << endl;
 
+                return true;
             }
 
             else if (SENDResponse == "SEND")
@@ -144,6 +149,9 @@ bool handleRequests(SocketClss &acceptSocket,string ownIP, double OwnVersion, ve
                 int RecevedMessageIDint;
                 ss3 >> RecevedMessageIDint;
 
+                cout << "messageID: " << RecevedMessageID;
+                cout << " messageToForward: " << MessageToForward << endl;
+
                 if (!checkMessageID(MessageIDs, RecevedMessageIDint)) // Check if messageID is already known
                 {
                     storeMessageID(MessageIDs, RecevedMessageIDint);                                             // Adds messageID to already known messagIDs
@@ -153,18 +161,38 @@ bool handleRequests(SocketClss &acceptSocket,string ownIP, double OwnVersion, ve
 
                 cout << "end of SEND" << endl;
 
+                return true;
+
+            }
+            else if (LogoffResponse == "LOGOFF") {
+
+                acceptSocket.closeSocket();
+                cout << "connection to terminated! " << endl;
+                return false;
+
             }
 
             else
             {
                 cout << "Request unknown: " << dataBuffer << endl;
-                acceptSocket.closeSocket();
+                //acceptSocket.closeSocket();
+
+                return true;
             }
         }
 
-        else cout << "empty second message" << endl;
+    else {
+        
+        if (BytesRecieved == 0) {
+            cout << "empty second message" << endl;
 
+        }
+        else cout << "connection Lost" << endl;
+       
+        acceptSocket.closeSocket();
+        return false;
+    }
 
-
+    return true;
 
 }
