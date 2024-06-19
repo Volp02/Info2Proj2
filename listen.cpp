@@ -10,6 +10,8 @@ typedef int socklen_t;
 #include <sstream>
 #include <iostream>
 #include <string.h> // Include the string.h header
+#include <thread>
+#include <mutex>
 
 #include "connect.h"
 #include "DataStorage.h"
@@ -35,9 +37,16 @@ int listenHandler(string ownIP, double OwnVersion, vector<string> &knownClients,
 
     acceptSocket = serverSocket->S_acceptConnection();
 
-    
+    if ((acceptSocket == nullptr) || acceptSocket->sockfd == -1) {
+        
+        cout << "no connection established! " << endl;
 
-    char dataBuffer[1024];
+        delete acceptSocket;
+        delete serverSocket;
+        return threadNum;
+    }
+
+    char* dataBuffer = new char[1024];
     acceptSocket->receiveData(dataBuffer, 1024);
 
     //cout << "Received data: " << dataBuffer << endl;
@@ -55,8 +64,8 @@ int listenHandler(string ownIP, double OwnVersion, vector<string> &knownClients,
 
         while (handleRequests(*acceptSocket, ownIP, OwnVersion, knownClients, MessageIDs, threadNum));
         
-
     } // Ende der Schleife
+
     acceptSocket->closeSocket();
     delete acceptSocket;
 
@@ -64,34 +73,53 @@ int listenHandler(string ownIP, double OwnVersion, vector<string> &knownClients,
     delete serverSocket;
 
     cout << "Thread closed" << endl;
+    delete dataBuffer;
     return threadNum;
 }
 
 int listenThreading(string ownIP, double OwnVersion, vector<string> &knownClients, vector<int> &MessageIDs, int threadNum)
-{
+{   
+    std::vector<std::thread> activeThreads; // Use std::thread directly
+    int threadCount = 0;
+    while (true) {
+        // Überprüfen, ob ein Thread beendet wurde
+        if (!activeThreads.empty()) {
 
-    for (int threadCount = 1; true; threadCount++) {
+            for (auto it = activeThreads.begin(); it != activeThreads.end();) {
+                if (!it->joinable()) { // Wenn der Thread nicht mehr joinable ist, wurde er beendet
+                    it = activeThreads.erase(it); // Entferne den beendeten Thread aus dem Vektor
+                }
+                else {
+                    ++it;
+                }
+            }
 
-        
-        threadCount = listenHandler(ownIP, OwnVersion, knownClients, MessageIDs, threadCount);
-
-        if (threadCount > 0)
-        {
-            cout << "threadCount: " << threadCount << endl;
         }
-        else
-        {
-            
-            return 0;
+       
+        // Neuen Thread erstellen, wenn weniger als 4 Threads laufen
+        if (activeThreads.size() < 4) {
+            //std::lock_guard<std::mutex> lock(threadVectorMutex);
+            activeThreads.emplace_back([&]() {
+                listenHandler(ownIP, OwnVersion, knownClients, MessageIDs, threadCount + 1);
+                threadCount++; // Thread-Zähler erhöhen
+                });
         }
 
+        // Warte eine kurze Zeit, bevor du erneut nach beendeten Threads suchst
+        std::this_thread::sleep_for(std::chrono::milliseconds(100)); // Oder eine andere geeignete Wartezeit
     }
+
+
+    return 0; // Korrekter Rückgabewert
+    
+
+    return 1;
 }
 
 
 bool handleRequests(SocketClss &acceptSocket,string ownIP, double OwnVersion, vector<string> &knownClients, vector<int> &MessageIDs, int threadNum)
 {
-    char dataBuffer[1024];
+    char* dataBuffer = new char[1024];
     cout << "ready for command" << endl;
     int BytesRecieved = acceptSocket.receiveData(dataBuffer, 1024);
     
@@ -190,8 +218,11 @@ bool handleRequests(SocketClss &acceptSocket,string ownIP, double OwnVersion, ve
         else cout << "connection Lost" << endl;
        
         acceptSocket.closeSocket();
+        delete dataBuffer;
         return false;
     }
+
+    delete dataBuffer;
 
     return true;
 

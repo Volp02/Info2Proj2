@@ -108,8 +108,14 @@ public:
     // Daten empfangen
     int receiveData(char* buffer, int bufferSize) {
         //buffer leeren:
-        memset(buffer, 0, bufferSize);
-        return recv(sockfd, buffer, bufferSize, 0);
+        if(!(buffer == nullptr)&& sockfd >= 0)
+        { 
+            memset(buffer, 0, bufferSize);
+            return recv(sockfd, buffer, bufferSize, 0);
+        }
+
+        return 0;
+        
     }
 
     // Socket schließen

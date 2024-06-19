@@ -116,7 +116,7 @@ int main()
 
     */
 
-    SocketClss ListeningSocket;
+    //SocketClss ListeningSocket;
     thread t1(listenThreading,own_address, version, std::ref(knownClients), std::ref(usedMsgIDs),1 ); 
 
 
