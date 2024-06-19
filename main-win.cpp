@@ -91,7 +91,7 @@ int main()
 
     double version = 0.6;
 
-
+    /*
     if (!firstUsr)
     {
         SocketClss ConnectSocket;
@@ -114,25 +114,26 @@ int main()
         
     }
 
-
+    */
 
     SocketClss ListeningSocket;
     thread t1(listenThreading,own_address, version, std::ref(knownClients), std::ref(usedMsgIDs),1 ); 
 
 
 
-    if(!firstUsr &&  knownClients.size() >0 ){
+    if(!firstUsr){
 
         SocketClss ConnectSocket;
 
-        ConnectSocket.C_createAndConnect(knownClients[0], PORT); // connect to first known server
+        ConnectSocket.C_createAndConnect(initServerIP, PORT); // connect to first known server
 
         if(ConnectSocket.handshakeOut(version)){
             cout << "handshake successful" << endl;
+            storeIP(knownClients,initServerIP);
             ConnectSocket.sendData("BACKCONNECT " + own_address);
             ConnectSocket.closeSocket();
 
-        } // send handshake
+        } 
         else{
             cout << "handshake not successful, returning" << endl;
             ConnectSocket.closeSocket();
