@@ -22,18 +22,18 @@ bool storeIP(vector<string> &IPStr, string IP)
 }
 
 //returns if IP already exists (false = already exists)
-bool checkIP(vector<string> &knownClients, string IP){
-
-	for(int i = knownClients.size(); i >= 0 ; i--){
-		if(knownClients[i] == IP){
-			return false;				//return false: IP already exists
-		}
-	
+bool checkIP(vector<string>& knownClients, string IP) {
+	if (knownClients.empty()) {
+		return true;
 	}
-	return true;						//return true: IP doesn't exist
-
-
+	for (int i = knownClients.size() - 1; i >= 0; i--) {
+		if (knownClients[i] == IP) {
+			return false; //return false: IP already exists
+		}
+	}
+	return true; //return true: IP doesn't exist
 }
+
 
 bool storeMessageID(vector<int> &MessageID_Vector, int MessageID)
 {

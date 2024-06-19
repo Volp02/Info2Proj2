@@ -23,13 +23,16 @@ using namespace std;
 
 int listenHandler(string ownIP, double OwnVersion, vector<string> &knownClients, vector<int> &MessageIDs, int threadNum)
 {
+    cout << "tread " << threadNum << " started" << endl;
 
-    SocketClss serverSocket;
-    serverSocket.S_createAndBind(PORT);
-    serverSocket.S_listen();
+    SocketClss* serverSocket = new SocketClss();
+    serverSocket->S_createAndBind(PORT);
+    serverSocket->S_listen();
 
 
-    SocketClss* acceptSocket = serverSocket.S_acceptConnection(); 
+    SocketClss* acceptSocket = new SocketClss();
+
+    acceptSocket = serverSocket->S_acceptConnection();
 
     
 
@@ -48,22 +51,20 @@ int listenHandler(string ownIP, double OwnVersion, vector<string> &knownClients,
     {
         cout << "handshake Confirmed!"<< endl;
         memset(dataBuffer, 0, 1024);
+        
 
-        acceptSocket->receiveData(dataBuffer, 1024);
-
-        string connectResponse(dataBuffer);
-        // cout << "dataBuffer string " << connectResponse << endl;
-
-        if (sizeof(dataBuffer) > 0)
+        if (acceptSocket->receiveData(dataBuffer, 1024) > 0 && acceptSocket->sockfd != -1)
         {
+            cout << "recieved ";
 
             string BackconnectResponse(dataBuffer, 11);
             string FriendRqResponse(dataBuffer, 18);
             string SENDResponse(dataBuffer, 4);
 
-            if (!(strcmp(BackconnectResponse.c_str(), "BACKCONNECT")))
+            if (BackconnectResponse == "BACKCONNECT")
             {
                 cout << "receved backConnection attempt" << endl;
+
                 string responseIP(dataBuffer + 12);
                 cout << responseIP;
                 if (checkIP(knownClients, responseIP))
@@ -73,16 +74,29 @@ int listenHandler(string ownIP, double OwnVersion, vector<string> &knownClients,
                 }
                 else
                     cout << responseIP << " is already a known client" << endl;
+
+                cout << "end of Connection attempt" << endl;
+
             }
-            else if (!(strcmp(BackconnectResponse.c_str(), "FRIEND REQUEST\n\n")))
+
+            else if (FriendRqResponse == "FRIEND REQUEST\n\n")
             {
+                cout << "friend request" << endl;
+
                 string IP;
                 IP = giveIP(knownClients);
                 acceptSocket->sendData(IP);
                 acceptSocket->closeSocket();
+
+                cout << "end of Friendrequest" << endl;
+
             }
-            else if (!(strcmp(SENDResponse.c_str(), "SEND")))
+
+            else if (SENDResponse == "SEND")
             {
+
+                cout << "SEND" << endl;
+
                 string MessageToForward(dataBuffer);
                 string RecevedMessageID(dataBuffer + 5, 11);
                 stringstream ss3;
@@ -96,34 +110,48 @@ int listenHandler(string ownIP, double OwnVersion, vector<string> &knownClients,
                     sendMessageToClients(MessageToForward, RecevedMessageIDint, knownClients, PORT, OwnVersion); // forwars message to all clients
                 }
                 acceptSocket->closeSocket();
+
+                cout << "end of SEND" << endl;
+
             }
+
             else
             {
-
                 cout << "Request unknown: " << connectResponse << endl;
                 acceptSocket->closeSocket();
             }
         }
+
+        else cout << "empty second message" << endl;
+
     } // Ende der Schleife
     acceptSocket->closeSocket();
     delete acceptSocket;
 
-    serverSocket.closeSocket();
-    //cout << "Thread closed" << endl;
+    serverSocket->closeSocket();
+    delete serverSocket;
+
+    cout << "Thread closed" << endl;
     return threadNum;
 }
 
 int listenThreading(string ownIP, double OwnVersion, vector<string> &knownClients, vector<int> &MessageIDs, int threadNum)
 {
 
-again:
-    if (listenHandler(ownIP, OwnVersion, knownClients, MessageIDs, 1))
-    {
-    }
-    else
-    {
-        return 0;
-    }
+    for (int threadCount = 1; true; threadCount++) {
 
-    goto again;
+        
+        threadCount = listenHandler(ownIP, OwnVersion, knownClients, MessageIDs, threadCount);
+
+        if (threadCount > 0)
+        {
+            cout << "threadCount: " << threadCount << endl;
+        }
+        else
+        {
+            
+            return 0;
+        }
+
+    }
 }

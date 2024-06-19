@@ -19,7 +19,7 @@ using namespace std;
 
 bool firstHandshake(std::string IP, int Port, double OwnVersion, std::vector<std::string> &knownClients) {
 
-     SocketClss ConnectSocket;
+    SocketClss ConnectSocket;
     std::cout << "connecting to server :" << IP << endl;
     ConnectSocket.C_createAndConnect(IP, Port); // connect to server
 
@@ -80,23 +80,31 @@ string sendFriendRequest(SocketClss socket, std::string targetIP) {
 bool sendMessageToClients(string Message, int MessageID, vector<string>& knownClients, int Port, double OwnVersion) {
 
     cout << "--- im function sendMessage ---" << endl;
-    for (int i = 0; i <= sizeof(knownClients); i++) {
+    cout << "payload: " << Message << endl;
 
-        SocketClss SendSocket;
+    for (int i = 0; i <= knownClients.size() - 1; i++) {
 
-        SendSocket.C_createAndConnect(knownClients[i], Port); // connect to server
+        SocketClss* SendSocket = new SocketClss();
 
-        if(SendSocket.handshakeOut(OwnVersion)){
+        SendSocket->C_createAndConnect(knownClients[i], Port); // connect to server
+
+        if(SendSocket->handshakeOut(OwnVersion)){
 
             string sendPaload =  "SEND " + to_string(MessageID) + ' ' + Message;
 
-            SendSocket.sendData(sendPaload); // Senden der Nachricht)
+            SendSocket->sendData(sendPaload); // Senden der Nachricht)
 
         }
         
-        SendSocket.closeSocket();
+        SendSocket->closeSocket();
+
+        delete SendSocket;
+
+        cout << "send to: " << knownClients[i] << endl;
 
     }
+
+    cout << "send to all known clients! " << endl;
 
     return true;
 }

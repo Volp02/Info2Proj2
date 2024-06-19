@@ -13,6 +13,7 @@ SPDX-License-Identifier: MIT
 
 #ifdef _WIN32 // Windows-spezifischer Code
 #include "initWinsock.h"
+#include <windows.h>
 typedef int socklen_t;
 #else // Linux-spezifischer Code
 #include "linuxLib.h"
@@ -57,6 +58,10 @@ int main()
     std::vector<string> knownClients;
     std::vector<int> usedMsgIDs;
 
+
+    //knownClients.push_back("1.1.1.1");
+    
+    
     getline(cin, own_address);
 
     if (size(own_address) <= 3)
@@ -140,13 +145,26 @@ int main()
 
     string messageInput;
 
-    cout << "message to send: ";
-    
-    //getline(cin, messageInput);
 
-    //sendMessageToClients(messageInput, createMessageID(usedMsgIDs), knownClients, PORT , version);
+    //OUTPUT current knownClients vector:
+    /*
+    while (true) {
+        cout << "knownClients: " << endl;
+        for (int i = 0; i < knownClients.size(); i++) {
+            cout << knownClients[i] << " , ";
+        }
+        Sleep(1000);
+        std::cout << "\033[2J\033[1;1H"; //clear Terminal output
+    }
+    */
+
+
+    cout << "message to send: ";
+    cin >> messageInput;
+    getline(cin, messageInput);
+
+    sendMessageToClients("Tets message!", createMessageID(usedMsgIDs), knownClients, PORT, version);
     //thread t2(listenHandler, own_address, version, std::ref(knownClients), std::ref(usedMsgIDs)); 
-    while(true){}
 
     t1.join();
     //t2.join();
