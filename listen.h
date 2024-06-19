@@ -11,8 +11,10 @@ using namespace std;
 
 SocketClss firstHandshakeHandler(string ownIP, double OwnVersion);
 
+bool handleRequests(SocketClss &acceptSocket,string ownIP, double OwnVersion, vector<string> &knownClients, vector<int> &MessageIDs, int threadNum);
 int listenThreading(string ownIP, double OwnVersion, vector<string> &knownClients, vector<int> &MessageIDs, int threadNum);
 int listenHandler(string ownIP, double OwnVersion, vector<string> &knownClients, vector<int> &MessageIDs, int threadNum);
+
 
 string checkForHandsake(char dataBuffer[], double OwnVersion);
 

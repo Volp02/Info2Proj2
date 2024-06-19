@@ -20,6 +20,7 @@ typedef int socklen_t;
 
 using namespace std;
 
+bool handleRequests(SocketClss &acceptSocket,string ownIP, double OwnVersion, vector<string> &knownClients, vector<int> &MessageIDs, int threadNum);
 
 int listenHandler(string ownIP, double OwnVersion, vector<string> &knownClients, vector<int> &MessageIDs, int threadNum)
 {
@@ -51,78 +52,9 @@ int listenHandler(string ownIP, double OwnVersion, vector<string> &knownClients,
     {
         cout << "handshake Confirmed!"<< endl;
         memset(dataBuffer, 0, 1024);
+
+        handleRequests(*acceptSocket,ownIP, OwnVersion, knownClients, MessageIDs, threadNum);
         
-
-        if (acceptSocket->receiveData(dataBuffer, 1024) > 0 && acceptSocket->sockfd != -1)
-        {
-            cout << "recieved ";
-
-            string BackconnectResponse(dataBuffer, 11);
-            string FriendRqResponse(dataBuffer, 18);
-            string SENDResponse(dataBuffer, 4);
-
-            if (BackconnectResponse == "BACKCONNECT")
-            {
-                cout << "receved backConnection attempt" << endl;
-
-                string responseIP(dataBuffer + 12);
-                cout << responseIP;
-                if (checkIP(knownClients, responseIP))
-                {
-                    acceptSocket->closeSocket();
-                    firstHandshake(responseIP, PORT, OwnVersion, knownClients);
-                }
-                else
-                    cout << responseIP << " is already a known client" << endl;
-
-                cout << "end of Connection attempt" << endl;
-
-            }
-
-            else if (FriendRqResponse == "FRIEND REQUEST\n\n")
-            {
-                cout << "friend request" << endl;
-
-                string IP;
-                IP = giveIP(knownClients);
-                acceptSocket->sendData(IP);
-                acceptSocket->closeSocket();
-
-                cout << "end of Friendrequest" << endl;
-
-            }
-
-            else if (SENDResponse == "SEND")
-            {
-
-                cout << "SEND" << endl;
-
-                string MessageToForward(dataBuffer);
-                string RecevedMessageID(dataBuffer + 5, 11);
-                stringstream ss3;
-                ss3 << RecevedMessageID;
-                int RecevedMessageIDint;
-                ss3 >> RecevedMessageIDint;
-
-                if (!checkMessageID(MessageIDs, RecevedMessageIDint)) // Check if messageID is already known
-                {
-                    storeMessageID(MessageIDs, RecevedMessageIDint);                                             // Adds messageID to already known messagIDs
-                    sendMessageToClients(MessageToForward, RecevedMessageIDint, knownClients, PORT, OwnVersion); // forwars message to all clients
-                }
-                acceptSocket->closeSocket();
-
-                cout << "end of SEND" << endl;
-
-            }
-
-            else
-            {
-                cout << "Request unknown: " << connectResponse << endl;
-                acceptSocket->closeSocket();
-            }
-        }
-
-        else cout << "empty second message" << endl;
 
     } // Ende der Schleife
     acceptSocket->closeSocket();
@@ -154,4 +86,85 @@ int listenThreading(string ownIP, double OwnVersion, vector<string> &knownClient
         }
 
     }
+}
+
+
+bool handleRequests(SocketClss &acceptSocket,string ownIP, double OwnVersion, vector<string> &knownClients, vector<int> &MessageIDs, int threadNum)
+{
+    char dataBuffer[1024];
+    
+    if (acceptSocket.receiveData(dataBuffer, 1024) > 0 && acceptSocket.sockfd != -1)
+        {
+            cout << "recieved ";
+
+            string BackconnectResponse(dataBuffer, 11);
+            string FriendRqResponse(dataBuffer, 18);
+            string SENDResponse(dataBuffer, 4);
+
+            if (BackconnectResponse == "BACKCONNECT")
+            {
+                cout << "receved backConnection attempt" << endl;
+
+                string responseIP(dataBuffer + 12);
+                cout << responseIP;
+                if (checkIP(knownClients, responseIP))
+                {
+                    acceptSocket.closeSocket();
+                    firstHandshake(responseIP, PORT, OwnVersion, knownClients);
+                }
+                else
+                    cout << responseIP << " is already a known client" << endl;
+
+                cout << "end of Connection attempt" << endl;
+
+            }
+
+            else if (FriendRqResponse == "FRIEND REQUEST\n\n")
+            {
+                cout << "friend request" << endl;
+
+                string IP;
+                IP = giveIP(knownClients);
+                acceptSocket.sendData(IP);
+                acceptSocket.closeSocket();
+
+                cout << "end of Friendrequest" << endl;
+
+            }
+
+            else if (SENDResponse == "SEND")
+            {
+
+                cout << "SEND" << endl;
+
+                string MessageToForward(dataBuffer);
+                string RecevedMessageID(dataBuffer + 5, 11);
+                stringstream ss3;
+                ss3 << RecevedMessageID;
+                int RecevedMessageIDint;
+                ss3 >> RecevedMessageIDint;
+
+                if (!checkMessageID(MessageIDs, RecevedMessageIDint)) // Check if messageID is already known
+                {
+                    storeMessageID(MessageIDs, RecevedMessageIDint);                                             // Adds messageID to already known messagIDs
+                    sendMessageToClients(MessageToForward, RecevedMessageIDint, knownClients, PORT, OwnVersion); // forwars message to all clients
+                }
+                acceptSocket.closeSocket();
+
+                cout << "end of SEND" << endl;
+
+            }
+
+            else
+            {
+                cout << "Request unknown: " << dataBuffer << endl;
+                acceptSocket.closeSocket();
+            }
+        }
+
+        else cout << "empty second message" << endl;
+
+
+
+
 }
