@@ -25,7 +25,7 @@ public:
 #else
     int sockfd;
 #endif
-    string ipAddress = "0.0.0.0";
+    //string ipAddress = "0.0.0.0";
 
     //retutns socket file descriptor
     int getSocket(){

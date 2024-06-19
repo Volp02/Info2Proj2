@@ -30,9 +30,7 @@ int listenHandler(string ownIP, double OwnVersion, vector<string> &knownClients,
     serverSocket->S_listen();
 
 
-    SocketClss* acceptSocket = new SocketClss();
-
-    acceptSocket = serverSocket->S_acceptConnection();
+    SocketClss* acceptSocket = serverSocket->S_acceptConnection();
 
     
 
