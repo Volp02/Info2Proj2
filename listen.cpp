@@ -95,12 +95,13 @@ int listenHandler(string ownIP, double OwnVersion, vector<string> &knownClients,
 
                 cout << "SEND" << endl;
 
-                string MessageToForward(dataBuffer);
                 string RecevedMessageID(dataBuffer + 5, 11);
                 stringstream ss3;
                 ss3 << RecevedMessageID;
                 int RecevedMessageIDint;
                 ss3 >> RecevedMessageIDint;
+
+                string MessageToForward(dataBuffer + 12);
 
                 if (!checkMessageID(MessageIDs, RecevedMessageIDint)) // Check if messageID is already known
                 {

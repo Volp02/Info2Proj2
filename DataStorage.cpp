@@ -49,7 +49,7 @@ int createMessageID(vector<int> &MessageID_Vector)
 	do
 	{
 		srand(time(NULL));
-		msgID = rand() % 999999;
+		msgID = rand() % 900000 + 100000;
 	} while (!checkMessageID(MessageID_Vector, msgID));
 
 	storeMessageID(MessageID_Vector, msgID);
