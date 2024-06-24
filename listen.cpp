@@ -29,6 +29,7 @@ int listenHandler(string ownIP, double OwnVersion, vector<string> &knownClients,
     cout << "tread " << threadNum << " started" << endl;
 
     SocketClss* serverSocket = new SocketClss();
+
     serverSocket->S_createAndBind(PORT);
     serverSocket->S_listen();
 
@@ -79,14 +80,14 @@ int listenHandler(string ownIP, double OwnVersion, vector<string> &knownClients,
 
 int listenThreading(string ownIP, double OwnVersion, vector<string> &knownClients, vector<int> &MessageIDs, int threadNum)
 {   
-    std::vector<std::thread> activeThreads; // Use std::thread directly
+    std::vector<std::thread> activeThreads; 
     int threadCount = 0;
     while (true) {
-        // Überprüfen, ob ein Thread beendet wurde
+
         if (!activeThreads.empty()) {
 
             for (auto it = activeThreads.begin(); it != activeThreads.end();) {
-                if (!it->joinable()) { // Wenn der Thread nicht mehr joinable ist, wurde er beendet
+                if (!it->joinable()) { // Wenn der Thread nicht mehr joinable ist, wird er beendet
                     it = activeThreads.erase(it); // Entferne den beendeten Thread aus dem Vektor
                 }
                 else {
@@ -96,12 +97,12 @@ int listenThreading(string ownIP, double OwnVersion, vector<string> &knownClient
 
         }
        
-        // Neuen Thread erstellen, wenn weniger als 4 Threads laufen
-        if (activeThreads.size() < 4) {
+        // Neuen Thread erstellen, wenn weniger als 1 (4) Threads laufen
+        if (activeThreads.size() < 1) {
             //std::lock_guard<std::mutex> lock(threadVectorMutex);
             activeThreads.emplace_back([&]() {
                 listenHandler(ownIP, OwnVersion, knownClients, MessageIDs, threadCount + 1);
-                threadCount++; // Thread-Zähler erhöhen
+                threadCount++; // Thread-Zï¿½hler erhï¿½hen
                 });
         }
 
@@ -110,7 +111,7 @@ int listenThreading(string ownIP, double OwnVersion, vector<string> &knownClient
     }
 
 
-    return 0; // Korrekter Rückgabewert
+    return 0; // Korrekter Rï¿½ckgabewert
     
 
     return 1;
