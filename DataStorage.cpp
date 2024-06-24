@@ -94,4 +94,5 @@ string giveIP(vector<string> &IPStr)
 			return output;
 		}
 	}
+	return "0";
 }
