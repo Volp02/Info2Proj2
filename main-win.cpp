@@ -162,9 +162,9 @@ int main()
 
     cout << "message to send: ";
     cin >> messageInput;
-    getline(cin, messageInput);
+    getline(cin >> std::ws, messageInput);
 
-    sendMessageToClients("Tets message!", createMessageID(usedMsgIDs), knownClients, PORT, version);
+    sendMessageToClients(messageInput, createMessageID(usedMsgIDs), knownClients, PORT, version);
     //thread t2(listenHandler, own_address, version, std::ref(knownClients), std::ref(usedMsgIDs)); 
 
     t1.join();

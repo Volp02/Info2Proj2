@@ -61,6 +61,7 @@ int listenHandler(string ownIP, double OwnVersion, vector<string> &knownClients,
     {
         cout << "handshake Confirmed!"<< endl;
         memset(dataBuffer, 0, 1024);
+        acceptSocket->sendData("INFO2/OK\n\n");
 
         while (handleRequests(*acceptSocket, ownIP, OwnVersion, knownClients, MessageIDs, threadNum));
         
