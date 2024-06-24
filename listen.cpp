@@ -10,6 +10,8 @@ typedef int socklen_t;
 #include <sstream>
 #include <iostream>
 #include <string.h> // Include the string.h header
+#include <thread>
+#include <mutex>
 
 #include "connect.h"
 #include "DataStorage.h"
@@ -18,195 +20,210 @@ typedef int socklen_t;
 // close  -  closesocketsocket
 #define PORT 26000
 
-using std::cin;
-using std::cout;
-using std::endl;
-using std::string;
-using std::vector;
+using namespace std;
 
-SocketClss firstHandshakeHandler(string ownIP, double OwnVersion)
+bool handleRequests(SocketClss &acceptSocket,string ownIP, double OwnVersion, vector<string> &knownClients, vector<int> &MessageIDs, int threadNum);
+
+int listenHandler(string ownIP, double OwnVersion, vector<string> &knownClients, vector<int> &MessageIDs, int threadNum)
 {
-    cout << "--- im thread firstHandshakeHandler" << endl;
-    SocketClss ServerSocket;
-    ServerSocket.S_createAndBind(PORT); // create and bind socke
-    
-    //DEBUG
-    cout<<"serverSocket created and bound" << endl;
+    cout << "tread " << threadNum << " started" << endl;
 
-    ServerSocket.S_listen(PORT);
-    cout << "Warte auf Verbindungen..." << endl;
+    SocketClss* serverSocket = new SocketClss();
+    serverSocket->S_createAndBind(PORT);
+    serverSocket->S_listen();
 
-    // Unendliche Schleife, um mehrere Client-Verbindungen zu akzeptieren
-    while (true)
+
+    SocketClss* acceptSocket = new SocketClss();
+
+    acceptSocket = serverSocket->S_acceptConnection();
+
+    if ((acceptSocket == nullptr) || acceptSocket->sockfd == -1) {
+        
+        cout << "no connection established! " << endl;
+
+        delete acceptSocket;
+        delete serverSocket;
+        return threadNum;
+    }
+
+    char* dataBuffer = new char[1024];
+    acceptSocket->receiveData(dataBuffer, 1024);
+
+    //cout << "Received data: " << dataBuffer << endl;
+    string handshakeResponse = acceptSocket->handshakeIn(dataBuffer, OwnVersion);
+    cout << " respoinding ;" << handshakeResponse << endl;
+    acceptSocket->sendData(handshakeResponse); // Handle Handshake
+
+    // 6. recieve data
+
+    string connectResponse(dataBuffer, 14);
+    if (connectResponse == "INFO2 CONNECT/")
     {
+        cout << "handshake Confirmed!"<< endl;
+        memset(dataBuffer, 0, 1024);
 
-        SocketClss acceptSocket = ServerSocket.S_acceptConnection();
-        // 6. recieve data
-        char dataBuffer[1024] = {0};
-        // recv(acceptSocket.getSocket(), dataBuffer, 1024, 0);
-        int recieveData = acceptSocket.receiveData(dataBuffer, 1024);
-        if (recieveData > 0)
-        {
+        while (handleRequests(*acceptSocket, ownIP, OwnVersion, knownClients, MessageIDs, threadNum));
+        
+    } // Ende der Schleife
 
-            string connectResponse(dataBuffer, 14);
-            if (connectResponse == "INFO2 CONNECT/")
-            {
+    acceptSocket->closeSocket();
+    delete acceptSocket;
 
-                std::cout << "received Connection attempt" << std::endl;
-                std::stringstream ss2;
-                std::string responseVers(dataBuffer + 14);
-                ss2 << responseVers;
-                double clientVersion;
-                ss2 >> clientVersion;
+    serverSocket->closeSocket();
+    delete serverSocket;
 
-                if (clientVersion >= OwnVersion)
-                {
-                    std::cout << "handshake successful\n";
-                    std::string acceptConnection = "INFO2 OK\n\n";
+    cout << "Thread closed" << endl;
+    delete dataBuffer;
+    return threadNum;
+}
 
-                    acceptSocket.sendData(acceptConnection); // Verwende sendData von MySocket
-                    std::cout << "responds with INFO2 OK! " << std::endl;
+int listenThreading(string ownIP, double OwnVersion, vector<string> &knownClients, vector<int> &MessageIDs, int threadNum)
+{   
+    std::vector<std::thread> activeThreads; // Use std::thread directly
+    int threadCount = 0;
+    while (true) {
+        // Überprüfen, ob ein Thread beendet wurde
+        if (!activeThreads.empty()) {
 
-                    return acceptSocket;
+            for (auto it = activeThreads.begin(); it != activeThreads.end();) {
+                if (!it->joinable()) { // Wenn der Thread nicht mehr joinable ist, wurde er beendet
+                    it = activeThreads.erase(it); // Entferne den beendeten Thread aus dem Vektor
                 }
-                else
-                {
-                    std::cout << "handshake failed -> old version: " << clientVersion << endl;
-                    return SocketClss();
+                else {
+                    ++it;
                 }
             }
+
+        }
+       
+        // Neuen Thread erstellen, wenn weniger als 4 Threads laufen
+        if (activeThreads.size() < 4) {
+            //std::lock_guard<std::mutex> lock(threadVectorMutex);
+            activeThreads.emplace_back([&]() {
+                listenHandler(ownIP, OwnVersion, knownClients, MessageIDs, threadCount + 1);
+                threadCount++; // Thread-Zähler erhöhen
+                });
         }
 
-        //ServerSocket.S_listen(PORT);
+        // Warte eine kurze Zeit, bevor du erneut nach beendeten Threads suchst
+        std::this_thread::sleep_for(std::chrono::milliseconds(100)); // Oder eine andere geeignete Wartezeit
     }
+
+
+    return 0; // Korrekter Rückgabewert
+    
+
+    return 1;
 }
-int listenForIncomingConnection(SocketClss &socket, string ownIP, double OwnVersion, vector<SocketClss> &IPStr, vector<int> &MessageIDs)
+
+
+bool handleRequests(SocketClss &acceptSocket,string ownIP, double OwnVersion, vector<string> &knownClients, vector<int> &MessageIDs, int threadNum)
 {
-    cout << "--- im thread listenForIncomingConnection" << endl;
-    // Unendliche Schleife, um mehrere Client-Verbinungen zu akzeptieren
-    while (true)
-    {
-        // 6. recieve data
-        char dataBuffer[1024] = {0};
-        //int recievedData = socket.receiveData(dataBuffer, 1024); // receive handshake
-        int recievedData = recv(socket.sockfd, dataBuffer, 1024, 0);
-        std::cout << "data recieved: " << dataBuffer << std::endl;
-      
-
-        string connectResponse(dataBuffer);
-        cout << "dataBuffer string " << connectResponse << endl;
-
-        if (recievedData > 0)
-        { // check handshake response
-
-            string connectResponse(dataBuffer, 14);
-            if (connectResponse == "INFO2 CONNECT/")
-            {
-
-                std::cout << "received Connection attempt" << std::endl;
-                std::stringstream ss2;
-                std::string responseVers(dataBuffer + 14);
-                ss2 << responseVers;
-                double clientVersion;
-                ss2 >> clientVersion;
-
-                if (clientVersion >= OwnVersion)
-                {
-                    std::cout << "handshake successful\n";
-                    std::string acceptConnection = "INFO2 OK\n\n";
-
-                    socket.sendData(acceptConnection); // Verwende sendData von MySocket
-                    std::cout << "responds with INFO2 OK! " << std::endl;
-
-                    // acceptSocket.closeSocket(); // SchlieÃŸe den Server-Socket nach dem Handshake
-                    //  Gib den Client-Socket zurÃ¼ck
-                }
-                else
-                {
-                    std::cout << "handshake failed -> old version: " << clientVersion << endl;
-                }
-            }
+    char* dataBuffer = new char[1024];
+    cout << "ready for command" << endl;
+    int BytesRecieved = acceptSocket.receiveData(dataBuffer, 1024);
+    
+    if (BytesRecieved > 0 && acceptSocket.sockfd != -1)
+        {
+            cout << "recieved ";
 
             string BackconnectResponse(dataBuffer, 11);
-            if (!(strcmp(BackconnectResponse.c_str(), "BACKCONNECT")))
+            string FriendRqResponse(dataBuffer, 18);
+            string SENDResponse(dataBuffer, 4);
+            string LogoffResponse(dataBuffer, 6);
+
+            if (BackconnectResponse == "BACKCONNECT")
             {
                 cout << "receved backConnection attempt" << endl;
+
                 string responseIP(dataBuffer + 12);
                 cout << responseIP;
-                firstHandshake(socket,responseIP, PORT, OwnVersion);
+                if (checkIP(knownClients, responseIP))
+                {
+                    acceptSocket.closeSocket();
+                    firstHandshake(responseIP, PORT, OwnVersion, knownClients);
+                }
+                else
+                    cout << responseIP << " is already a known client" << endl;
+
+                cout << "end of Connection attempt" << endl;
+
+                return true;
             }
 
-            string FriendRqResponse(dataBuffer, 18);
-            if (!(strcmp(BackconnectResponse.c_str(), "FRIEND REQUEST\n\n")))
+            else if (FriendRqResponse == "FRIEND REQUEST\n\n")
             {
+                cout << "friend request" << endl;
 
                 string IP;
-                IP = giveIP(IPStr);
-                socket.sendData(IP);
+                IP = giveIP(knownClients);
+                acceptSocket.sendData(IP);
+                acceptSocket.closeSocket();
+
+                cout << "end of Friendrequest" << endl;
+
+                return true;
             }
 
-            string SENDResponse(dataBuffer, 4);
-            if (!(strcmp(SENDResponse.c_str(), "SEND")))
+            else if (SENDResponse == "SEND")
             {
+
+                cout << "SEND" << endl;
 
                 string MessageToForward(dataBuffer);
                 string RecevedMessageID(dataBuffer + 5, 11);
-                std::stringstream ss3;
+                stringstream ss3;
                 ss3 << RecevedMessageID;
                 int RecevedMessageIDint;
                 ss3 >> RecevedMessageIDint;
 
-                if (!checkMessageID(MessageIDs, RecevedMessageIDint))
+                cout << "messageID: " << RecevedMessageID;
+                cout << " messageToForward: " << MessageToForward << endl;
+
+                if (!checkMessageID(MessageIDs, RecevedMessageIDint)) // Check if messageID is already known
                 {
-
-{
-	char input;
-
-	std::cout << "    ..........................................................\n";
-	std::cout << "    .                                                        .\n";
-	std::cout << "    .      INFO2 PROJECT from Lajos, Matthias, Andi          .\n";
-	std::cout << "    .                                                        .\n";
-	std::cout << "    .      hit [j] to join an existing P2P Network!          .\n";
-	std::cout << "    .      hit [i] to create a new P2P Network!              .\n";
-	std::cout << "    .                                                        .\n";
-	std::cout << "    ..........................................................\n\n";
-	std::cout << "Eingabe: ";
-
-	Input:
-	std::cin >> input;
-
-	if (input == 'j')
-	{
-		return false;
-	}
-	else if (input == 'i')
-	{
-
-		return true;
-	}
-	else
-	{
-		std::cout << "Bitte nur j oder i eingeben! " << std::endl;
-		goto Input;
-	}
-}
-
-//void sendMessage()
-{
-	
-}
-(MessageToForward, RecevedMessageIDint, IPStr);
+                    storeMessageID(MessageIDs, RecevedMessageIDint);                                             // Adds messageID to already known messagIDs
+                    sendMessageToClients(MessageToForward, RecevedMessageIDint, knownClients, PORT, OwnVersion); // forwars message to all clients
                 }
+                acceptSocket.closeSocket();
+
+                cout << "end of SEND" << endl;
+
+                return true;
+
+            }
+            else if (LogoffResponse == "LOGOFF") {
+
+                acceptSocket.closeSocket();
+                cout << "connection to terminated! " << endl;
+                return false;
+
+            }
+
+            else
+            {
+                cout << "Request unknown: " << dataBuffer << endl;
+                //acceptSocket.closeSocket();
+
+                return true;
             }
         }
-        else break;
 
-        // cout << "whiling";
+    else {
+        
+        if (BytesRecieved == 0) {
+            cout << "empty second message" << endl;
 
-    } // Ende der Schleife
+        }
+        else cout << "connection Lost" << endl;
+       
+        acceptSocket.closeSocket();
+        delete dataBuffer;
+        return false;
+    }
 
-    // Server-Socket schlieÃŸen (wird nie erreicht)
+    delete dataBuffer;
 
-    socket.closeSocket();
-    return 0;
+    return true;
+
 }

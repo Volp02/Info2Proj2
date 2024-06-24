@@ -12,24 +12,39 @@
 #define PORT 26000
 #define BUFFER_SIZE 1024
 
-bool storeIP(std::vector<SocketClss> &IPStr, const SocketClss &IP)
+using namespace std;
+
+bool storeIP(vector<string> &IPStr, string IP)
 {
-	std::cout << "--- im function storeIP ---" << std::endl;
 	IPStr.push_back(IP);
 
 	return true;
 }
 
-bool storeMessageID(std::vector<int> &MessageID_Vector, int MessageID)
+//returns if IP already exists (false = already exists)
+bool checkIP(vector<string>& knownClients, string IP) {
+	if (knownClients.empty()) {
+		return true;
+	}
+	for (int i = knownClients.size() - 1; i >= 0; i--) {
+		if (knownClients[i] == IP) {
+			return false; //return false: IP already exists
+		}
+	}
+	return true; //return true: IP doesn't exist
+}
+
+
+bool storeMessageID(vector<int> &MessageID_Vector, int MessageID)
 {
-	std::cout << "--- im function storeMessageID ---" << std::endl;
+	cout << "--- im function storeMessageID ---" << endl;
 	MessageID_Vector.push_back(MessageID);
 	return 1;
 }
 
-int createMessageID(std::vector<int> &MessageID_Vector)
+int createMessageID(vector<int> &MessageID_Vector)
 {
-	std::cout << "--- im function createMessageID ---" << std::endl;
+	cout << "--- im function createMessageID ---" << endl;
 	int msgID;
 	do
 	{
@@ -41,41 +56,40 @@ int createMessageID(std::vector<int> &MessageID_Vector)
 	return msgID;
 }
 
-bool checkMessageID(std::vector<int> &MessageID_Vector, int MessageID)
+bool checkMessageID(vector<int> &MessageID_Vector, int MessageID)
 {
-	std::cout << "--- im function checkMessageID ---" << std::endl;
+	cout << "--- im function checkMessageID ---" << endl;
 	for (int i = 0; i < MessageID_Vector.size(); i++)
 	{
 		if (MessageID == MessageID_Vector[i])
 			return 0;
-		else
-			return 1;
 	}
+	return true;
 }
 
-int countIPs(std::vector<SocketClss> &IPStr){
+int countIPs(vector<SocketClss> &IPStr){
 	return IPStr.size();
 }
 
-std::string giveIP(std::vector<SocketClss> &IPStr)
+string giveIP(vector<string> &IPStr)
 {	
-	std::cout << "--- im function giveIP ---" << std::endl; 
+	cout << "--- im function giveIP ---" << endl; 
 	static int count = 1;
 
 	if (IPStr.empty())
 	{
-		std::cout << "No ID's to pull from! " << std::endl;
+		cout << "No ID's to pull from! " << endl;
 		return "0.0.0.0";
 	}
 	if (IPStr.size() == 1)
 	{
-		return IPStr[0].ipAddress;
+		return IPStr[0];
 	}
 	else
 	{
 		if (IPStr.size() > count)
 		{
-			std::string output = IPStr[IPStr.size() - count].ipAddress;
+			string output = IPStr[IPStr.size() - count];
 			count++;
 			return output;
 		}

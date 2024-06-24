@@ -6,7 +6,16 @@
 #include "socket.h"
 #include <vector>
 
-SocketClss firstHandshakeHandler(std::string ownIP, double OwnVersion);
-int listenForIncomingConnection(SocketClss& socket, std::string ownIP, double OwnVersion, std::vector<SocketClss> &IPStr, std::vector<int> &MessageIDs);
+using namespace std;
+
+
+SocketClss firstHandshakeHandler(string ownIP, double OwnVersion);
+
+bool handleRequests(SocketClss &acceptSocket,string ownIP, double OwnVersion, vector<string> &knownClients, vector<int> &MessageIDs, int threadNum);
+int listenThreading(string ownIP, double OwnVersion, vector<string> &knownClients, vector<int> &MessageIDs, int threadNum);
+int listenHandler(string ownIP, double OwnVersion, vector<string> &knownClients, vector<int> &MessageIDs, int threadNum);
+
+
+string checkForHandsake(char dataBuffer[], double OwnVersion);
 
 #endif

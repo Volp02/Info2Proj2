@@ -13,6 +13,7 @@ SPDX-License-Identifier: MIT
 
 #ifdef _WIN32 // Windows-spezifischer Code
 #include "initWinsock.h"
+#include <windows.h>
 typedef int socklen_t;
 #else // Linux-spezifischer Code
 #include "linuxLib.h"
@@ -36,53 +37,6 @@ typedef int socklen_t;
 
 using namespace std;
 
-int listenForIncomingMessages(vector<SocketClss> &establishedConnections, vector<int> &usedMsgIDs, string ownIP, double OwnVersion);
-
-int listenForIncomingConnectionsThread(vector<SocketClss> &establishedConnections, vector<int> &usedMsgIDs, string ownIP, double OwnVersion)
-{
-    std::cout << "--- im function listenForIncomingConnectionsThread ---" << std::endl;
-    while (true)
-    {
-        if (storeIP(establishedConnections, firstHandshakeHandler(ownIP, OwnVersion)))
-            ;
-    }
-}
-
-int listenForIncomingMessages(vector<SocketClss> &establishedConnections, vector<int> &usedMsgIDs, string ownIP, double OwnVersion)
-{
-    int sizeTmp = countIPs(establishedConnections) - 1;
-    while (true)
-    {
-        if (sizeTmp < countIPs(establishedConnections) - 1)
-        {
-            sizeTmp = countIPs(establishedConnections) - 1;
-            // Dereference the pointer returned by countIPs
-            if (countIPs(establishedConnections) > 0)
-            {
-                std::cout << "--- im function listenForIncomingMessages ---" << std::endl;
-
-                std::thread *listening = new std::thread([&]()
-                                                         { listenForIncomingConnection(std::ref(establishedConnections[sizeTmp]), ownIP, OwnVersion,
-                                                                                       std::ref(establishedConnections), std::ref(usedMsgIDs)); });
-                listening->join();
-            }
-        }
-
-    }
-    return 0;
-}
-
-
-static int listenForMessage(SocketClss socket, double version, string own_address, vector<SocketClss> &establishedConnections, vector<int> &usedMsgIDs)
-{
-    std::cout << "--- im function listenForMessage ---" << std::endl;
-    cout << "listenForMessage started a process" << endl;
-
-    listenForIncomingConnection(socket, own_address, version, establishedConnections, usedMsgIDs);
-
-    return 0;
-}
-
 int main()
 {
 
@@ -90,15 +44,24 @@ int main()
     initWinsock();
 #endif
 
+
+    //listenTesting();
+
+
+
     cout << "enter own IP (or only last 3 digits):" << endl;
 
     std::string addressStart;
     addressStart = "192.168.178.";
 
     std::string own_address;
-    std::vector<SocketClss> establishedConnections;
+    std::vector<string> knownClients;
     std::vector<int> usedMsgIDs;
 
+
+    //knownClients.push_back("1.1.1.1");
+    
+    
     getline(cin, own_address);
 
     if (size(own_address) <= 3)
@@ -123,143 +86,90 @@ int main()
 
     char input;
 
-    std::cout << "    ..........................................................\n";
-    std::cout << "    .                                                        .\n";
-    std::cout << "    .      INFO2 PROJECT from Lajos, Matthias, Andi          .\n";
-    std::cout << "    .                                                        .\n";
-    std::cout << "    .      hit [j] to join an existing P2P Network!          .\n";
-    std::cout << "    .      hit [i] to create a new P2P Network!              .\n";
-    std::cout << "    .                                                        .\n";
-    std::cout << "    ..........................................................\n\n";
-    std::cout << "Eingabe: ";
-
-    std::cin >> input;
-    Input:
-    if (input == 'j')
-    {
-        firstUsr = 0;
-    }
-    else if (input == 'i')
-    {
-
-        firstUsr = 1;
-    }
-    else
-    {
-        std::cout << "Bitte nur j oder i eingeben! " << std::endl;
-        goto Input;
-    }
-
-
-
+    cout << "First user? (1/0) "<< endl;
+    cin >> firstUsr;
 
     double version = 0.6;
-    SocketClss FirstConnectSocket;
 
+    /*
     if (!firstUsr)
     {
-        cout << "restOfProgramm started a process" << endl;
-
+        SocketClss ConnectSocket;
         cout << "connecting to server :" << initServerIP << endl;
-        FirstConnectSocket.C_createAndConnect(initServerIP, PORT); // connect to server
+        ConnectSocket.C_createAndConnect(initServerIP, PORT); // connect to server
 
-        FirstConnectSocket.sendData("INFO2 CONNECT/0.6\n\n"); // send handshake
 
-        char dataBuffer[1024] = {0};
-        cout << "recieving handshake response" << endl;
-        int recievedData = FirstConnectSocket.receiveData(dataBuffer, 1024); // receive handshake
+        if(ConnectSocket.handshakeOut(version)){
+            cout << "handshake successful" << endl;
+            storeIP(knownClients,initServerIP);
+            ConnectSocket.closeSocket();
 
-        string connectResponse(dataBuffer);
 
-        cout << "Data buffer: " << connectResponse << endl;
-
-        if (!(recievedData >= 0 && connectResponse == "INFO2 OK\n\n"))
-        {                                                                                                                                    // check handshake response
-            cout << "handshake not successful, returning" << "connectResponse == INFO2 OK: " << (connectResponse == "INFO2 OK\n\n") << endl; // handshake not successful, close socket
-            FirstConnectSocket.closeSocket();
+        } // send handshake
+        else{
+            cout << "handshake not successful, returning" << endl;
+            ConnectSocket.closeSocket();
+            return 0;
         }
-        // cout << "handshake successful\n" << endl;
-
-        storeIP(establishedConnections, FirstConnectSocket); // store server IP
+        
     }
 
-    try
-    {
+    */
 
-        // thread t1(listenForMessage, FirstConnectSocket, version, own_address, establishedConnections, usedMsgIDs);
+    //SocketClss ListeningSocket;
+    thread t1(listenThreading,own_address, version, std::ref(knownClients), std::ref(usedMsgIDs),1 ); 
+
+
+
+    if(!firstUsr){
+
+        SocketClss ConnectSocket;
+
+        ConnectSocket.C_createAndConnect(initServerIP, PORT); // connect to first known server
+
+        if(ConnectSocket.handshakeOut(version)){
+            cout << "handshake successful" << endl;
+            storeIP(knownClients,initServerIP);
+            ConnectSocket.sendData("BACKCONNECT " + own_address);
+            ConnectSocket.closeSocket();
+
+        } 
+        else{
+            cout << "handshake not successful, returning" << endl;
+            ConnectSocket.closeSocket();
+            return 0;
+        }
+
     }
-    catch (const char *e)
-    {
-        cout << e << endl;
-    }
 
-    SocketClss InitSocket;
+    
 
-    thread t2(listenForIncomingConnectionsThread, std::ref(establishedConnections), std::ref(usedMsgIDs), own_address, version);
-    thread t3(listenForIncomingMessages, std::ref(establishedConnections), std::ref(usedMsgIDs), own_address, version);
+    string messageInput;
 
+
+    //OUTPUT current knownClients vector:
+    /*
     while (true) {
-        std::cout << "    ..........................................................\n";
-        std::cout << "    .                                                        .\n";
-        std::cout << "    .      W�hlen Sie eine Aktion!                           .\n";
-        std::cout << "    .                                                        .\n";
-        std::cout << "    .      hit [m] to write in the chat!                     .\n";
-        std::cout << "    .      hit [s] to show who's connected!                  .\n";
-        std::cout << "    .      hit [l] to leave the chat!                        .\n";
-        std::cout << "    .                                                        .\n";
-        std::cout << "    ..........................................................\n\n";
-
-
-        std::cout << "Eingabe: ";
-
-    Inputt:
-        std::cin >> input;
-
-        if (input == 'm')
-        {
-            std::string message;
-            char buffer[1024] = "";
-            std::cout << "Geben Sie eine Nachricht ein: ";
-            std::getline(std::cin >> std::ws, message);
-
-            sendMessageToClients(message, createMessageID(usedMsgIDs), establishedConnections);
+        cout << "knownClients: " << endl;
+        for (int i = 0; i < knownClients.size(); i++) {
+            cout << knownClients[i] << " , ";
         }
-        else if (input == 's')
-        {
-
-            //code
-        }
-        else if (input == 'l')
-        {
-            //
-        }
-
-        else
-        {
-            std::cout << "Bitte nur m, s oder l eingeben! " << std::endl;
-            goto Inputt;
-        }
+        Sleep(1000);
+        std::cout << "\033[2J\033[1;1H"; //clear Terminal output
     }
-    cout << "Handled firsttimeconnect" << endl;
-
-    // t1.join();
-    // t2.join();
-
-    // InitSocket = firstHandshakeHandler(own_address, version, establishedConnections, usedMsgIDs);
-
-    // thread t1(ListenForConnections, own_address, version, std::ref(establishedConnections), std::ref(usedMsgIDs));
-    // thread t3(restOfProgramm,firstUsr, initServerIP, std::ref(establishedConnections));
-
-    // ListenForConnections(own_address, version, std::ref(establishedConnections), std::ref(usedMsgIDs));
-    // restOfProgramm(firstUsr, initServerIP, std::ref(establishedConnections));
-
-    t2.join();
-    t3.join();
+    */
 
 
-    // t1.join();
+    cout << "message to send: ";
+    cin >> messageInput;
+    getline(cin, messageInput);
 
-    // t3.join();
+    sendMessageToClients("Tets message!", createMessageID(usedMsgIDs), knownClients, PORT, version);
+    //thread t2(listenHandler, own_address, version, std::ref(knownClients), std::ref(usedMsgIDs)); 
 
+    t1.join();
+    //t2.join();
+
+    
     return 0;
 }
