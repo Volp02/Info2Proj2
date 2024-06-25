@@ -126,11 +126,6 @@ int main()
             sendMessageToClients("Tets message!", createMessageID(usedMsgIDs), knownClients, PORT, version);
         }
        
-
-
-
-    }
-    
     //thread t2(listenHandler, own_address, version, std::ref(knownClients), std::ref(usedMsgIDs)); 
 
     t1.join();
