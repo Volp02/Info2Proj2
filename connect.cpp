@@ -40,71 +40,41 @@ bool firstHandshake(std::string IP, int Port, double OwnVersion, std::vector<std
     }
 }
 
-
-// TO BE CHANGED TO USE CLASS: \/
-/*
-bool backConnectSend(SocketClss socket, string ownIP, string sendIP)
-{
-    cout << "--- im function backConnectSend ---" << endl;
-    std::cout << "Backconnect to server " << sendIP << endl;
-
-    string message = "BACKCONNECT " + ownIP;
-
-    socket.sendData(message); // Senden der Nachricht)
-    
-    std::cout << "Backconnect: Nachricht gesendet: " << message << std::endl;
-    return true;
-}
-string sendFriendRequest(SocketClss socket, std::string targetIP) {
-
-    cout << "--- im function sendFriendRequest ---" << endl;
-    std::cout << "sendFriendRequest: Verbunden zum Server " << targetIP << endl;
-
-
-    string payload = "FRIEND REQUEST\n\n";
-
-    socket.sendData(payload); // Senden der Nachricht)
-
-    char buffer[12] = { 0 };
-
-    socket.receiveData(buffer, 15);    
-
-    string response(buffer);
-
-    return response;
-    
-    // 5. Verbindung schließen
-    
-}
-*/
 bool sendMessageToClients(string Message, int MessageID, vector<string>& knownClients, int Port, double OwnVersion) {
 
-    cout << "--- im function sendMessage ---" << endl;
-    cout << "payload: " << Message << endl;
+    //cout << "--- im function sendMessage ---" << endl;
+    //cout << "payload: " << Message << endl;
 
-    for (int i = 0; i <= knownClients.size() - 1; i++) {
+    if (knownClients.size() > 0) {
 
-        SocketClss* SendSocket = new SocketClss();
+        for (int i = 0; i <= knownClients.size() - 1; i++) {
 
-        SendSocket->C_createAndConnect(knownClients[i], Port); // connect to server
+            SocketClss* SendSocket = new SocketClss();
 
-        if(SendSocket->handshakeOut(OwnVersion)){
+            SendSocket->C_createAndConnect(knownClients[i], Port); // connect to server
 
-            string sendPaload =  "SEND " + to_string(MessageID) + ' ' + Message;
+            if (SendSocket->handshakeOut(OwnVersion)) {
 
-            SendSocket->sendData(sendPaload); // Senden der Nachricht)
+                string sendPaload = "SEND " + to_string(MessageID) + ' ' + Message;
+
+                SendSocket->sendData(sendPaload); // Senden der Nachricht)
+
+            }
+
+            SendSocket->closeSocket();
+
+            delete SendSocket;
+
+            cout << "send to: " << knownClients[i] << endl;
 
         }
-        
-        SendSocket->closeSocket();
 
-        delete SendSocket;
+        cout << "send to all known clients! " << endl;
 
-        cout << "send to: " << knownClients[i] << endl;
+        return true;
 
     }
 
-    cout << "send to all known clients! " << endl;
-
-    return true;
+    return false;
+    
 }

@@ -37,14 +37,14 @@ bool checkIP(vector<string>& knownClients, string IP) {
 
 bool storeMessageID(vector<int> &MessageID_Vector, int MessageID)
 {
-	cout << "--- im function storeMessageID ---" << endl;
+	//cout << "--- im function storeMessageID ---" << endl;
 	MessageID_Vector.push_back(MessageID);
 	return 1;
 }
 
 int createMessageID(vector<int> &MessageID_Vector)
 {
-	cout << "--- im function createMessageID ---" << endl;
+	//cout << "--- im function createMessageID ---" << endl;
 	int msgID;
 	do
 	{
@@ -58,7 +58,7 @@ int createMessageID(vector<int> &MessageID_Vector)
 
 bool checkMessageID(vector<int> &MessageID_Vector, int MessageID)
 {
-	cout << "--- im function checkMessageID ---" << endl;
+	//cout << "--- im function checkMessageID ---" << endl;
 	for (int i = 0; i < MessageID_Vector.size(); i++)
 	{
 		if (MessageID == MessageID_Vector[i])
@@ -73,7 +73,7 @@ int countIPs(vector<SocketClss> &IPStr){
 
 string giveIP(vector<string> &IPStr)
 {	
-	cout << "--- im function giveIP ---" << endl; 
+	//cout << "--- im function giveIP ---" << endl; 
 	static int count = 1;
 
 	if (IPStr.empty())

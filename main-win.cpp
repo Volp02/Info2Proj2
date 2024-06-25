@@ -44,11 +44,6 @@ int main()
     initWinsock();
 #endif
 
-
-    //listenTesting();
-
-
-
     cout << "enter own IP (or only last 3 digits):" << endl;
 
     std::string addressStart;
@@ -57,9 +52,6 @@ int main()
     std::string own_address;
     std::vector<string> knownClients;
     std::vector<int> usedMsgIDs;
-
-
-    //knownClients.push_back("1.1.1.1");
     
     
     getline(cin, own_address);
@@ -91,31 +83,6 @@ int main()
 
     double version = 0.6;
 
-    /*
-    if (!firstUsr)
-    {
-        SocketClss ConnectSocket;
-        cout << "connecting to server :" << initServerIP << endl;
-        ConnectSocket.C_createAndConnect(initServerIP, PORT); // connect to server
-
-
-        if(ConnectSocket.handshakeOut(version)){
-            cout << "handshake successful" << endl;
-            storeIP(knownClients,initServerIP);
-            ConnectSocket.closeSocket();
-
-
-        } // send handshake
-        else{
-            cout << "handshake not successful, returning" << endl;
-            ConnectSocket.closeSocket();
-            return 0;
-        }
-        
-    }
-
-    */
-
     //SocketClss ListeningSocket;
     thread t1(listenThreading,own_address, version, std::ref(knownClients), std::ref(usedMsgIDs),1 ); 
 
@@ -125,8 +92,9 @@ int main()
 
         SocketClss ConnectSocket;
 
+        cout << "connecting to " << initServerIP << endl;
         ConnectSocket.C_createAndConnect(initServerIP, PORT); // connect to first known server
-
+        cout << "connected to " << initServerIP << endl;
         if(ConnectSocket.handshakeOut(version)){
             cout << "handshake successful" << endl;
             storeIP(knownClients,initServerIP);
@@ -142,29 +110,27 @@ int main()
 
     }
 
-    
-
     string messageInput;
+    bool endProgram = true;
+    while (!endProgram) {
 
+        cout << "message to send: ";
+        cin >> messageInput;
+        (cin, messageInput);
 
-    //OUTPUT current knownClients vector:
-    /*
-    while (true) {
-        cout << "knownClients: " << endl;
-        for (int i = 0; i < knownClients.size(); i++) {
-            cout << knownClients[i] << " , ";
+        if (messageInput == "q") {
+            endProgram = true;
+
         }
-        Sleep(1000);
-        std::cout << "\033[2J\033[1;1H"; //clear Terminal output
+        else {
+            sendMessageToClients("Tets message!", createMessageID(usedMsgIDs), knownClients, PORT, version);
+        }
+       
+
+
+
     }
-    */
-
-
-    cout << "message to send: ";
-    cin >> messageInput;
-    getline(cin, messageInput);
-
-    sendMessageToClients("Tets message!", createMessageID(usedMsgIDs), knownClients, PORT, version);
+    
     //thread t2(listenHandler, own_address, version, std::ref(knownClients), std::ref(usedMsgIDs)); 
 
     t1.join();
