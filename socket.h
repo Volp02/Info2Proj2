@@ -46,10 +46,16 @@ public:
             return false;
         }
 
-        if (connect(sockfd, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) < 0) {
+        //if (connect(sockfd, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) < 0) {
 
-            return false;
-        }
+          //  return false;
+        //}
+
+        connect(sockfd, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) == SOCKET_ERROR;
+        int error_code = WSAGetLastError(); // Fehlercode abrufen
+        std::cerr << "Verbindungsfehler: " << error_code << std::endl;    
+        return false;
+
         return true;
     }
 
