@@ -80,42 +80,50 @@ int listenHandler(string ownIP, double OwnVersion, vector<string> &knownClients,
 
 int listenThreading(string ownIP, double OwnVersion, vector<string> &knownClients, vector<int> &MessageIDs, int threadNum)
 {   
-    std::vector<std::thread> activeThreads; // Use std::thread directly
-    int threadCount = 0;
-    while (true) {
-        // Überprüfen, ob ein Thread beendet wurde
-        if (!activeThreads.empty()) {
+    std::vector<std::thread> activeThreads;
 
-            for (auto it = activeThreads.begin(); it != activeThreads.end();) {
-                if (!it->joinable()) { // Wenn der Thread nicht mehr joinable ist, wurde er beendet
-                    it = activeThreads.erase(it); // Entferne den beendeten Thread aus dem Vektor
+    int threadCount = 0;
+
+    while (true) // Abbruchbedingung hinzugefügt
+    
+    {
+            
+            
+            // Neuen Thread erstellen, wenn weniger als 4 Threads laufen
+            if (activeThreads.size() < threadNum)
+            {
+                
+                activeThreads.emplace_back([&]() {
+                    listenHandler(ownIP, OwnVersion, knownClients, MessageIDs, threadCount + 1);
+                    threadCount++; // Thread-Zähler erhöhen
+                    });
+            }
+            else if (activeThreads.size() < 0){
+                
+                for (auto it = activeThreads.begin(); it != activeThreads.end();)
+                {
+                    if (!it->joinable())
+                    { // Wenn der Thread nicht mehr joinable ist, wurde er beendet
+                        it = activeThreads.erase(it); // Entferne den beendeten Thread aus dem Vektor
+                    }
+                    else
+                    {
+                        ++it;
+                    }
                 }
-                else {
-                    ++it;
-                }
+            
             }
 
-        }
-       
-        // Neuen Thread erstellen, wenn weniger als 4 Threads laufen
-        if (activeThreads.size() < 4) {
-            //std::lock_guard<std::mutex> lock(threadVectorMutex);
-            activeThreads.emplace_back([&]() {
-                listenHandler(ownIP, OwnVersion, knownClients, MessageIDs, threadCount + 1);
-                threadCount++; // Thread-Zähler erhöhen
-                });
-        }
+            std::this_thread::sleep_for(std::chrono::milliseconds(100)); // Oder eine andere geeignete Wartezeit
 
-        // Warte eine kurze Zeit, bevor du erneut nach beendeten Threads suchst
-        std::this_thread::sleep_for(std::chrono::milliseconds(100)); // Oder eine andere geeignete Wartezeit
+
     }
 
+    // ... (Aufräumen und Schließen von Sockets)
 
-    return 0; // Korrekter Rückgabewert
-    
-
-    return 1;
+    return 0;
 }
+
 
 
 bool handleRequests(SocketClss &acceptSocket,string ownIP, double OwnVersion, vector<string> &knownClients, vector<int> &MessageIDs, int threadNum)
@@ -171,7 +179,7 @@ bool handleRequests(SocketClss &acceptSocket,string ownIP, double OwnVersion, ve
 
                 cout << "SEND" << endl;
 
-                string MessageToForward(dataBuffer);
+                string MessageToForward(dataBuffer + 12);
                 string RecevedMessageID(dataBuffer + 5, 11);
                 stringstream ss3;
                 ss3 << RecevedMessageID;
